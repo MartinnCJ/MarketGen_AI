@@ -1,0 +1,33 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:ital,wght@0,400;0,700;1,400&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html { font-family: 'Inter', system-ui, sans-serif; }
+  body { @apply bg-slate-50 text-slate-900 antialiased; }
+  * { box-sizing: border-box; }
+}
+
+/* Tiptap editor prose styles */
+.tiptap-editor {
+  font-family: 'Merriweather', Georgia, serif;
+  @apply min-h-[400px] outline-none text-slate-800 leading-relaxed;
+}
+
+.tiptap-editor h1 { @apply text-2xl font-bold mt-6 mb-3 text-slate-900; }
+.tiptap-editor h2 { @apply text-xl  font-bold mt-5 mb-2 text-slate-900; }
+.tiptap-editor h3 { @apply text-lg  font-semibold mt-4 mb-2 text-slate-800; }
+.tiptap-editor p  { @apply mb-4 leading-7; }
+.tiptap-editor ul { @apply list-disc pl-5 mb-4 space-y-1; }
+.tiptap-editor ol { @apply list-decimal pl-5 mb-4 space-y-1; }
+.tiptap-editor strong { @apply font-semibold; }
+.tiptap-editor em    { @apply italic; }
+.tiptap-editor a { @apply text-primary-600 underline hover:text-primary-800; }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { @apply bg-transparent; }
+::-webkit-scrollbar-thumb { @apply bg-slate-300 rounded-full; }
+::-webkit-scrollbar-thumb:hover { @apply bg-slate-400; }

@@ -1,0 +1,1330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NoonDalton AI Marketing Suite — Wireframe v3 Integrated</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', system-ui, sans-serif; margin: 0; background: #f9fafb; }
+    .icon { display: inline-block; vertical-align: middle; }
+    .page { display: none; }
+    .page.active { display: block; }
+    input[type="range"] { accent-color: #4f46e5; }
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
+    @keyframes pulse-dot { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+    .pulse-dot { animation: pulse-dot 2s ease-in-out infinite; }
+    .modal-backdrop { backdrop-filter: blur(4px); }
+  </style>
+</head>
+<body>
+  <div class="flex h-screen bg-gray-50 overflow-hidden">
+
+    <!-- ═══════════════════════════════════ -->
+    <!-- SIDEBAR                             -->
+    <!-- ═══════════════════════════════════ -->
+    <aside id="sidebar" class="w-52 bg-slate-800 flex flex-col h-full shrink-0 transition-all duration-200">
+      <div id="sidebar-header" class="flex items-center h-14 px-3 border-b border-slate-700 justify-between">
+        <div id="sidebar-brand">
+          <p class="text-white font-bold text-sm leading-tight">NoonDalton</p>
+          <p class="text-teal-400 text-xs">AI Marketing Suite</p>
+        </div>
+        <button id="sidebar-toggle" class="p-1 rounded text-slate-400 hover:text-white hover:bg-slate-700">
+          <svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <nav class="flex-1 px-2 py-3 space-y-0.5 overflow-y-auto" id="main-nav"></nav>
+      <div class="mx-2 border-t border-slate-700"></div>
+      <nav class="px-2 py-2 space-y-0.5" id="bottom-nav"></nav>
+      <div id="sidebar-user" class="px-3 py-2.5 border-t border-slate-700">
+        <p class="text-white text-xs font-medium">Admin User</p>
+        <p class="text-slate-400 text-xs">admin@noondalton.com</p>
+      </div>
+    </aside>
+
+    <!-- ═══════════════════════════════════ -->
+    <!-- MAIN CONTENT                        -->
+    <!-- ═══════════════════════════════════ -->
+    <main class="flex-1 overflow-y-auto p-5">
+      <div class="max-w-5xl mx-auto">
+
+        <!-- ── DASHBOARD ── -->
+        <section id="page-dashboard" class="page active">
+          <div class="space-y-5">
+            <div class="flex items-center justify-between">
+              <div>
+                <h1 class="text-xl font-bold text-gray-900">Dashboard</h1>
+                <p class="text-xs text-gray-500">Full-funnel view — from discovery to conversion</p>
+              </div>
+              <div class="flex gap-2">
+                <button class="inline-flex items-center gap-1.5 font-medium rounded-lg transition-colors text-xs px-3.5 py-2 bg-white text-gray-700 border border-gray-300 hover:bg-gray-50"><span data-icon="refresh" data-size="13"></span>Refresh</button>
+                <button class="inline-flex items-center gap-1.5 font-medium rounded-lg transition-colors text-xs px-3.5 py-2 bg-teal-500 text-white hover:bg-teal-600"><span data-icon="play" data-size="13"></span>Run Pipeline</button>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-6 gap-3" id="dash-kpis"></div>
+
+            <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+              <div class="flex items-center justify-between mb-4">
+                <p class="text-sm font-semibold text-gray-900">Opportunity Funnel (last 7 days)</p>
+                <div class="flex gap-1 text-xs text-gray-400">
+                  <span>Intelligence</span><span>→</span><span>Content</span><span>→</span><span>Outreach</span><span>→</span><span>Conversion</span>
+                </div>
+              </div>
+              <div class="space-y-2.5" id="dash-funnel"></div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+              <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
+                <p class="text-xs font-semibold text-gray-700 mb-3">Pipeline Activity (14 days)</p>
+                <div class="h-32 bg-gradient-to-t from-indigo-50 to-transparent rounded-lg flex items-end justify-around px-4 pb-2" id="dash-bars"></div>
+                <div class="flex justify-center gap-4 mt-2">
+                  <span class="flex items-center gap-1 text-xs text-gray-500"><span class="w-2 h-2 rounded bg-indigo-400"></span>Emails</span>
+                  <span class="flex items-center gap-1 text-xs text-gray-500"><span class="w-2 h-2 rounded bg-teal-400"></span>Replies</span>
+                </div>
+              </div>
+              <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
+                <p class="text-xs font-semibold text-gray-700 mb-3">Content Used in Outreach</p>
+                <div class="space-y-2.5" id="dash-content"></div>
+              </div>
+            </div>
+
+            <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
+              <div class="flex items-center justify-between mb-3">
+                <p class="text-xs font-semibold text-gray-700">Last Pipeline Run — 2 hours ago</p>
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-700">Completed</span>
+              </div>
+              <div class="flex items-center gap-2" id="dash-timeline"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ── OPPORTUNITIES ── -->
+        <section id="page-opportunities" class="page">
+          <div class="space-y-4">
+            <div class="flex items-center justify-between">
+              <div>
+                <h1 class="text-xl font-bold text-gray-900">Opportunities</h1>
+                <p class="text-xs text-gray-500">Track every prospect from first detection through conversion</p>
+              </div>
+              <div class="flex gap-2">
+                <button class="inline-flex items-center gap-1.5 font-medium rounded-lg transition-colors text-xs px-3.5 py-2 bg-white text-gray-700 border border-gray-300 hover:bg-gray-50"><span data-icon="download" data-size="13"></span>Export</button>
+                <button class="inline-flex items-center gap-1.5 font-medium rounded-lg transition-colors text-xs px-3.5 py-2 bg-indigo-600 text-white hover:bg-indigo-700"><span data-icon="plus" data-size="14"></span>Add Manually</button>
+              </div>
+            </div>
+
+            <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-3">
+              <div class="flex gap-1" id="opp-stage-tabs"></div>
+            </div>
+
+            <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+              <table class="w-full text-xs">
+                <thead><tr class="bg-slate-50 text-slate-600 uppercase">
+                  <th class="px-4 py-2.5 text-left font-medium">Company</th>
+                  <th class="px-4 py-2.5 text-left font-medium">Opportunity</th>
+                  <th class="px-4 py-2.5 text-left font-medium">Contact</th>
+                  <th class="px-4 py-2.5 text-left font-medium">Stage</th>
+                  <th class="px-4 py-2.5 text-left font-medium">Score</th>
+                  <th class="px-4 py-2.5 text-left font-medium">Content Used</th>
+                  <th class="px-4 py-2.5 text-left font-medium">Last Activity</th>
+                </tr></thead>
+                <tbody class="divide-y divide-slate-100" id="opp-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ── CONTENT LIBRARY ── -->
+        <section id="page-content" class="page">
+          <div class="space-y-4">
+            <div class="flex items-center justify-between">
+              <div>
+                <h1 class="text-xl font-bold text-gray-900">Content Library</h1>
+                <p class="text-xs text-gray-500">Case studies, proposals, templates, and assets — all in one place. AI agents pull from here to personalize outreach.</p>
+              </div>
+              <button id="open-create-content" class="inline-flex items-center gap-1.5 font-medium rounded-lg transition-colors text-xs px-3.5 py-2 bg-indigo-600 text-white hover:bg-indigo-700"><span data-icon="plus" data-size="14"></span>Create Content</button>
+            </div>
+            <div class="flex gap-2 flex-wrap" id="content-type-tabs"></div>
+            <div class="grid grid-cols-3 gap-3" id="content-grid"></div>
+          </div>
+        </section>
+
+        <!-- ── OUTREACH ── -->
+        <section id="page-outreach" class="page">
+          <div class="space-y-4">
+            <div class="flex items-center justify-between">
+              <div>
+                <h1 class="text-xl font-bold text-gray-900">Outreach</h1>
+                <p class="text-xs text-gray-500">Review pending emails and track sent communications</p>
+              </div>
+              <div class="flex gap-2" id="outreach-actions">
+                <button class="inline-flex items-center gap-1.5 font-medium rounded-lg transition-colors text-xs px-2.5 py-1.5 bg-red-600 text-white hover:bg-red-700"><span data-icon="x" data-size="12"></span>Reject All</button>
+                <button class="inline-flex items-center gap-1.5 font-medium rounded-lg transition-colors text-xs px-2.5 py-1.5 bg-teal-500 text-white hover:bg-teal-600"><span data-icon="check" data-size="12"></span>Approve All</button>
+              </div>
+            </div>
+
+            <div class="flex gap-1 p-1 bg-gray-100 rounded-xl w-fit">
+              <button class="outreach-tab flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-medium transition-colors bg-white text-gray-900 shadow-sm" data-tab="review">
+                <span data-icon="inbox" data-size="13"></span>Review Queue
+                <span class="bg-amber-500 text-white text-xs font-bold px-1.5 py-0.5 rounded-full leading-none">3</span>
+              </button>
+              <button class="outreach-tab flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-medium transition-colors text-gray-500" data-tab="history">
+                <span data-icon="clock" data-size="13"></span>Sent History
+              </button>
+            </div>
+
+            <!-- Review tab -->
+            <div id="outreach-review" class="grid gap-4" style="grid-template-columns:2fr 3fr">
+              <div class="space-y-2" id="review-list"></div>
+              <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5" id="review-preview"></div>
+            </div>
+
+            <!-- History tab -->
+            <div id="outreach-history" class="space-y-4 hidden">
+              <div class="flex gap-2" id="history-filters"></div>
+              <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+                <table class="w-full text-xs">
+                  <thead><tr class="bg-slate-50 text-slate-600 uppercase">
+                    <th class="px-4 py-2.5 text-left font-medium">Contact</th>
+                    <th class="px-4 py-2.5 text-left font-medium">Company</th>
+                    <th class="px-4 py-2.5 text-left font-medium">Subject</th>
+                    <th class="px-4 py-2.5 text-left font-medium">Content Used</th>
+                    <th class="px-4 py-2.5 text-left font-medium">Status</th>
+                    <th class="px-4 py-2.5 text-left font-medium">Sent</th>
+                    <th class="px-4 py-2.5 text-left font-medium">Score</th>
+                  </tr></thead>
+                  <tbody class="divide-y divide-slate-100" id="history-tbody"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ── AI ASSISTANT ── -->
+        <section id="page-assistant" class="page">
+          <div class="bg-white rounded-2xl border border-gray-100 shadow-sm flex flex-col" style="height: calc(100vh - 6rem);">
+            <div class="p-4 border-b border-gray-100 flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <span data-icon="spark" data-size="16" class="text-indigo-600"></span>
+                <h2 class="text-sm font-semibold text-gray-900">AI Assistant</h2>
+              </div>
+              <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-indigo-100 text-indigo-700">Context-aware</span>
+            </div>
+
+            <div class="flex-1 p-4 space-y-4 overflow-y-auto">
+              <div class="bg-gray-50 rounded-xl p-3">
+                <p class="text-xs font-medium text-gray-500 mb-2">Suggested actions based on your pipeline</p>
+                <div class="grid grid-cols-2 gap-2" id="assistant-suggestions"></div>
+              </div>
+
+              <div class="flex gap-2 max-w-[80%]">
+                <div class="w-7 h-7 rounded-full bg-indigo-100 flex items-center justify-center shrink-0 text-indigo-600"><span data-icon="bot" data-size="13"></span></div>
+                <div class="bg-white border border-gray-200 rounded-2xl rounded-tl-sm p-3 text-xs text-gray-700">
+                  Hi! I have context on your pipeline and content library. I can help you draft proposals using your existing case studies, write targeted outreach, or find new opportunities. What would you like to do?
+                </div>
+              </div>
+              <div class="flex gap-2 justify-end">
+                <div class="bg-indigo-600 text-white rounded-2xl rounded-tr-sm p-3 text-xs max-w-[75%]">
+                  Draft a proposal for MedTech Inc. They need customer support — use data from the Support Excellence whitepaper.
+                </div>
+              </div>
+              <div class="flex gap-2 max-w-[80%]">
+                <div class="w-7 h-7 rounded-full bg-indigo-100 flex items-center justify-center shrink-0 text-indigo-600"><span data-icon="bot" data-size="13"></span></div>
+                <div class="bg-white border border-gray-200 rounded-2xl rounded-tl-sm p-3 text-xs text-gray-700">
+                  <p class="mb-2">I'll draft that proposal using your "Customer Support Excellence" whitepaper as a foundation. Here's what I'm pulling in:</p>
+                  <div class="bg-indigo-50 rounded-lg p-2 mb-2 flex items-center gap-2">
+                    <span data-icon="link" data-size="10" class="text-indigo-500"></span>
+                    <span class="text-xs text-indigo-700">Referencing: Customer Support Excellence whitepaper</span>
+                  </div>
+                  <p>Creating a personalized proposal for MedTech Inc's Customer Support Lead position, incorporating your healthcare BPO expertise and support frameworks...</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="p-4 border-t border-gray-100 flex gap-2">
+              <input class="flex-1 border border-gray-300 rounded-xl px-4 py-2 text-xs" placeholder="Ask about your pipeline, draft content, find opportunities..." />
+              <button class="inline-flex items-center gap-1.5 font-medium rounded-lg transition-colors text-xs px-3.5 py-2 bg-indigo-600 text-white hover:bg-indigo-700"><span data-icon="send" data-size="14"></span>Send</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- ── REPORTS ── -->
+        <section id="page-reports" class="page">
+          <div class="space-y-4">
+            <div class="flex items-center justify-between">
+              <h1 class="text-xl font-bold text-gray-900">Reports</h1>
+              <button class="inline-flex items-center gap-1.5 font-medium rounded-lg transition-colors text-xs px-3.5 py-2 bg-white text-gray-700 border border-gray-300 hover:bg-gray-50"><span data-icon="download" data-size="14"></span>Export</button>
+            </div>
+            <div class="grid grid-cols-4 gap-3" id="reports-kpis"></div>
+            <div class="grid grid-cols-2 gap-4">
+              <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
+                <p class="text-xs font-semibold text-gray-700 mb-3">Outreach Performance (14 days)</p>
+                <div class="h-32 bg-gradient-to-t from-indigo-50 to-transparent rounded-lg flex items-end justify-around px-4 pb-2" id="reports-bars"></div>
+                <div class="flex justify-center gap-4 mt-2">
+                  <span class="flex items-center gap-1 text-xs text-gray-500"><span class="w-2 h-2 rounded bg-indigo-400"></span>Sent</span>
+                  <span class="flex items-center gap-1 text-xs text-gray-500"><span class="w-2 h-2 rounded bg-teal-400"></span>Replies</span>
+                </div>
+              </div>
+              <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
+                <p class="text-xs font-semibold text-gray-700 mb-3">Top Performing Content</p>
+                <div class="space-y-2" id="reports-content"></div>
+              </div>
+            </div>
+            <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
+              <p class="text-xs font-semibold text-gray-700 mb-3">Opportunities by Industry</p>
+              <div class="grid grid-cols-4 gap-3" id="reports-industry"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ── SETTINGS ── -->
+        <section id="page-settings" class="page">
+          <div class="space-y-4">
+            <div><h1 class="text-xl font-bold text-gray-900">Settings</h1><p class="text-xs text-gray-500">Configure AI model, integrations, and the prospecting pipeline</p></div>
+            <div class="flex gap-1 p-1 bg-gray-100 rounded-xl">
+              <button class="settings-tab flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-xs font-medium transition-colors text-gray-500" data-tab="general"><span data-icon="bot" data-size="13"></span>General</button>
+              <button class="settings-tab flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-xs font-medium transition-colors bg-white text-gray-900 shadow-sm" data-tab="pipeline"><span data-icon="radar" data-size="13"></span>Pipeline<span class="w-1.5 h-1.5 rounded-full bg-green-500 pulse-dot" id="settings-pipeline-dot"></span></button>
+              <button class="settings-tab flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-xs font-medium transition-colors text-gray-500" data-tab="content"><span data-icon="tag" data-size="13"></span>Content Tagging</button>
+            </div>
+
+            <!-- GENERAL TAB -->
+            <div id="settings-general" class="settings-pane hidden space-y-4">
+              <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+                <div class="flex items-center justify-between mb-4 pb-3 border-b border-gray-100">
+                  <div class="flex items-center gap-2">
+                    <div class="w-7 h-7 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-600"><span data-icon="bot" data-size="14"></span></div>
+                    <h2 class="text-sm font-semibold text-gray-900">AI Model (Gemini)</h2>
+                  </div>
+                </div>
+                <div class="mb-3"><label class="block text-xs font-medium text-gray-700 mb-1">Model</label><select class="w-full border border-gray-300 rounded-lg px-3 py-1.5 text-xs"><option>Gemini 2.0 Flash (fast, low cost)</option></select></div>
+                <div class="grid grid-cols-2 gap-3">
+                  <div class="mb-3"><label class="block text-xs font-medium text-gray-700 mb-1">Temperature</label><input class="w-full border border-gray-300 rounded-lg px-3 py-1.5 text-xs" value="0.7" /></div>
+                  <div class="mb-3"><label class="block text-xs font-medium text-gray-700 mb-1">Max Output Tokens</label><input class="w-full border border-gray-300 rounded-lg px-3 py-1.5 text-xs" value="8192" /></div>
+                </div>
+              </div>
+
+              <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+                <div class="flex items-center justify-between mb-4 pb-3 border-b border-gray-100">
+                  <div class="flex items-center gap-2">
+                    <div class="w-7 h-7 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-600"><span data-icon="plug" data-size="14"></span></div>
+                    <h2 class="text-sm font-semibold text-gray-900">Integrations</h2>
+                  </div>
+                </div>
+                <div class="mb-3"><label class="block text-xs font-medium text-gray-700 mb-1">CRM Provider</label><select class="w-full border border-gray-300 rounded-lg px-3 py-1.5 text-xs"><option>No CRM</option><option>HubSpot</option><option>Salesforce</option></select></div>
+                <p class="text-xs text-gray-400 mt-1">When connected, won opportunities sync automatically as CRM contacts.</p>
+              </div>
+
+              <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+                <div class="flex items-center justify-between mb-4 pb-3 border-b border-gray-100">
+                  <div class="flex items-center gap-2">
+                    <div class="w-7 h-7 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-600"><span data-icon="share2" data-size="14"></span></div>
+                    <div><h2 class="text-sm font-semibold text-gray-900">Social Connections</h2><p class="text-xs text-gray-400">Connect your social accounts to publish content and track engagement</p></div>
+                  </div>
+                </div>
+                <div class="grid grid-cols-2 gap-2" id="social-channels"></div>
+              </div>
+
+              <div class="flex justify-end"><button class="inline-flex items-center gap-1.5 font-medium rounded-lg transition-colors text-xs px-3.5 py-2 bg-indigo-600 text-white hover:bg-indigo-700"><span data-icon="save" data-size="13"></span>Save Settings</button></div>
+            </div>
+
+            <!-- PIPELINE TAB -->
+            <div id="settings-pipeline" class="settings-pane space-y-4">
+              <div id="pipeline-toggle-card" class="flex items-center justify-between p-3.5 rounded-2xl border border-green-200 bg-green-50">
+                <div class="flex items-center gap-2.5">
+                  <span data-icon="radar" data-size="18" class="text-green-600" id="pipeline-toggle-icon"></span>
+                  <div><p class="text-xs font-semibold text-gray-900">Prospecting Pipeline</p><p class="text-xs text-gray-500" id="pipeline-toggle-text">Active — scanning every 24 hours</p></div>
+                </div>
+                <button id="pipeline-toggle-btn" class="relative w-11 h-6 rounded-full transition-colors" style="background-color:#16a34a">
+                  <span id="pipeline-toggle-knob" class="absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform" style="transform:translateX(20px)"></span>
+                </button>
+              </div>
+
+              <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+                <div class="flex items-center justify-between mb-4 pb-3 border-b border-gray-100">
+                  <div class="flex items-center gap-2">
+                    <div class="w-7 h-7 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-600"><span data-icon="search" data-size="14"></span></div>
+                    <div><h2 class="text-sm font-semibold text-gray-900">Specializations & Keywords</h2><p class="text-xs text-gray-400">Define NoonDalton's services and target industries</p></div>
+                  </div>
+                </div>
+                <div class="mb-3">
+                  <label class="block text-xs font-medium text-gray-700 mb-1">Service keywords</label>
+                  <p class="text-xs text-gray-400 mb-1">Press Enter or comma to add</p>
+                  <div class="flex flex-wrap gap-1.5 p-2 border border-gray-300 rounded-lg bg-white min-h-[32px]" data-tags="BPO,outsourcing,data entry,back office,customer support,accounting"></div>
+                </div>
+                <div class="mb-3">
+                  <label class="block text-xs font-medium text-gray-700 mb-1">Target industries</label>
+                  <p class="text-xs text-gray-400 mb-1">Leave empty for all industries</p>
+                  <div class="flex flex-wrap gap-1.5 p-2 border border-gray-300 rounded-lg bg-white min-h-[32px]" data-tags="finance,healthcare,retail"></div>
+                </div>
+                <div class="mb-3">
+                  <label class="block text-xs font-medium text-gray-700 mb-1">Excluded companies</label>
+                  <p class="text-xs text-gray-400 mb-1">Competitors or orgs to skip</p>
+                  <div class="flex flex-wrap gap-1.5 p-2 border border-gray-300 rounded-lg bg-white min-h-[32px]" data-tags="Acme BPO,CompetitorCorp"></div>
+                </div>
+              </div>
+
+              <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+                <div class="flex items-center justify-between mb-4 pb-3 border-b border-gray-100">
+                  <div class="flex items-center gap-2">
+                    <div class="w-7 h-7 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-600"><span data-icon="globe" data-size="14"></span></div>
+                    <div><h2 class="text-sm font-semibold text-gray-900">Job Sources</h2><p class="text-xs text-gray-400">Where job postings are fetched from</p></div>
+                  </div>
+                  <button class="inline-flex items-center gap-1.5 font-medium rounded-lg transition-colors text-xs px-2.5 py-1.5 bg-indigo-600 text-white hover:bg-indigo-700"><span data-icon="plus" data-size="12"></span>Add Source</button>
+                </div>
+                <div class="space-y-2">
+                  <div class="flex items-center justify-between p-3 rounded-xl border border-gray-100 bg-gray-50 hover:border-indigo-200">
+                    <div class="flex items-center gap-2.5"><div class="w-8 h-8 rounded-lg flex items-center justify-center text-violet-600 bg-violet-50"><span data-icon="code" data-size="14"></span></div><div><p class="text-xs font-medium text-gray-800">LinkedIn via JSearch</p><p class="text-xs text-gray-400">API · jsearch.p.rapidapi.com</p></div></div>
+                  </div>
+                  <div class="flex items-center justify-between p-3 rounded-xl border border-gray-100 bg-gray-50 hover:border-indigo-200">
+                    <div class="flex items-center gap-2.5"><div class="w-8 h-8 rounded-lg flex items-center justify-center text-orange-600 bg-orange-50"><span data-icon="rss" data-size="14"></span></div><div><p class="text-xs font-medium text-gray-800">Indeed RSS Feed</p><p class="text-xs text-gray-400">RSS · indeed.com/rss/q=outsourcing</p></div></div>
+                  </div>
+                  <div class="flex items-center justify-between p-3 rounded-xl border border-gray-100 bg-gray-50 hover:border-indigo-200">
+                    <div class="flex items-center gap-2.5"><div class="w-8 h-8 rounded-lg flex items-center justify-center text-cyan-600 bg-cyan-50"><span data-icon="globe" data-size="14"></span></div><div><p class="text-xs font-medium text-gray-800">Remote.co Careers</p><p class="text-xs text-gray-400">SCRAPER · remote.co/remote-jobs</p></div></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+                <div class="flex items-center justify-between mb-4 pb-3 border-b border-gray-100">
+                  <div class="flex items-center gap-2">
+                    <div class="w-7 h-7 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-600"><span data-icon="mail" data-size="14"></span></div>
+                    <div><h2 class="text-sm font-semibold text-gray-900">SMTP Configuration</h2><p class="text-xs text-gray-400">Mail server for sending outreach emails</p></div>
+                  </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                  <div class="mb-3"><label class="block text-xs font-medium text-gray-700 mb-1">SMTP Server</label><input class="w-full border border-gray-300 rounded-lg px-3 py-1.5 text-xs" value="smtp.gmail.com" /></div>
+                  <div class="mb-3"><label class="block text-xs font-medium text-gray-700 mb-1">Port</label><input class="w-full border border-gray-300 rounded-lg px-3 py-1.5 text-xs" value="587" /></div>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                  <div class="mb-3"><label class="block text-xs font-medium text-gray-700 mb-1">Username</label><input class="w-full border border-gray-300 rounded-lg px-3 py-1.5 text-xs" value="sales@noondalton.com" /></div>
+                  <div class="mb-3"><label class="block text-xs font-medium text-gray-700 mb-1">Password</label><input type="password" class="w-full border border-gray-300 rounded-lg px-3 py-1.5 text-xs" value="secret" /></div>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                  <div class="mb-3"><label class="block text-xs font-medium text-gray-700 mb-1">Sender Email</label><input class="w-full border border-gray-300 rounded-lg px-3 py-1.5 text-xs" value="sales@noondalton.com" /></div>
+                  <div class="mb-3"><label class="block text-xs font-medium text-gray-700 mb-1">Sender Name</label><input class="w-full border border-gray-300 rounded-lg px-3 py-1.5 text-xs" value="NoonDalton Sales" /></div>
+                </div>
+                <div class="flex justify-end"><button class="inline-flex items-center gap-1.5 font-medium rounded-lg transition-colors text-xs px-2.5 py-1.5 bg-white text-gray-700 border border-gray-300 hover:bg-gray-50">Test Connection</button></div>
+              </div>
+
+              <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+                <div class="flex items-center justify-between mb-4 pb-3 border-b border-gray-100">
+                  <div class="flex items-center gap-2">
+                    <div class="w-7 h-7 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-600"><span data-icon="sliders" data-size="14"></span></div>
+                    <div><h2 class="text-sm font-semibold text-gray-900">Automation</h2><p class="text-xs text-gray-400">Control the pipeline's automation level</p></div>
+                  </div>
+                </div>
+                <div class="mb-3">
+                  <label class="block text-xs font-medium text-gray-700 mb-1">Auto-approval threshold: <span id="threshold-label">80</span>%</label>
+                  <p class="text-xs text-gray-400 mb-1">Emails at or above this score send automatically. Lower ones go to review.</p>
+                  <div class="flex items-center gap-3">
+                    <input id="threshold-slider" type="range" min="50" max="100" step="5" value="80" class="flex-1 h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer" />
+                    <span id="threshold-pill" class="w-12 text-center text-xs font-semibold text-indigo-700 bg-indigo-50 px-2 py-1 rounded-lg">80%</span>
+                  </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                  <div class="mb-3"><label class="block text-xs font-medium text-gray-700 mb-1">Max emails per day</label><input class="w-full border border-gray-300 rounded-lg px-3 py-1.5 text-xs" value="50" /></div>
+                  <div class="mb-3"><label class="block text-xs font-medium text-gray-700 mb-1">Scan frequency</label><select class="w-full border border-gray-300 rounded-lg px-3 py-1.5 text-xs"><option>Every 24 hours</option><option>Every 6 hours</option><option>Every 12 hours</option></select></div>
+                </div>
+              </div>
+
+              <div class="flex justify-end pb-2"><button class="inline-flex items-center gap-1.5 font-medium rounded-lg transition-colors text-xs px-3.5 py-2 bg-indigo-600 text-white hover:bg-indigo-700"><span data-icon="save" data-size="13"></span>Save Pipeline</button></div>
+            </div>
+
+            <!-- CONTENT TAGGING TAB -->
+            <div id="settings-content" class="settings-pane hidden space-y-4">
+              <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+                <div class="flex items-center justify-between mb-4 pb-3 border-b border-gray-100">
+                  <div class="flex items-center gap-2">
+                    <div class="w-7 h-7 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-600"><span data-icon="tag" data-size="14"></span></div>
+                    <div><h2 class="text-sm font-semibold text-gray-900">Auto-Tagging Rules</h2><p class="text-xs text-gray-400">Define how content is tagged so agents can match it to opportunities</p></div>
+                  </div>
+                </div>
+                <p class="text-xs text-gray-500 mb-3">Content is automatically tagged by industry and service line. The email composer uses these tags to find the most relevant case studies, proposals, and templates for each opportunity.</p>
+                <div class="mb-3">
+                  <label class="block text-xs font-medium text-gray-700 mb-1">Industry tags</label>
+                  <div class="flex flex-wrap gap-1.5 p-2 border border-gray-300 rounded-lg bg-white min-h-[32px]" data-tags="finance,healthcare,retail,technology,logistics"></div>
+                </div>
+                <div class="mb-3">
+                  <label class="block text-xs font-medium text-gray-700 mb-1">Service line tags</label>
+                  <div class="flex flex-wrap gap-1.5 p-2 border border-gray-300 rounded-lg bg-white min-h-[32px]" data-tags="data entry,customer support,accounting,back office,outsourcing,virtual assistant"></div>
+                </div>
+              </div>
+
+              <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+                <div class="flex items-center justify-between mb-4 pb-3 border-b border-gray-100">
+                  <div class="flex items-center gap-2">
+                    <div class="w-7 h-7 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-600"><span data-icon="zap" data-size="14"></span></div>
+                    <div><h2 class="text-sm font-semibold text-gray-900">Content Matching</h2><p class="text-xs text-gray-400">How the email composer selects content for personalization</p></div>
+                  </div>
+                </div>
+                <div class="mb-3">
+                  <label class="block text-xs font-medium text-gray-700 mb-1">Matching strategy</label>
+                  <select class="w-full border border-gray-300 rounded-lg px-3 py-1.5 text-xs">
+                    <option>Best match (industry + service + recency)</option>
+                    <option>Industry match only</option>
+                    <option>Service match only</option>
+                    <option>Manual only (no auto-matching)</option>
+                  </select>
+                </div>
+                <div class="mb-3">
+                  <label class="block text-xs font-medium text-gray-700 mb-1">Minimum relevance score</label>
+                  <p class="text-xs text-gray-400 mb-1">Content below this score won't be included in emails</p>
+                  <input class="w-full border border-gray-300 rounded-lg px-3 py-1.5 text-xs" value="0.6" />
+                </div>
+                <div class="mt-2 p-3 rounded-xl bg-blue-50 border border-blue-100">
+                  <p class="text-xs text-blue-800 font-medium mb-1.5">How it works</p>
+                  <div class="space-y-1 text-xs text-blue-700">
+                    <p>1. Scout detects a job posting and extracts industry + service keywords</p>
+                    <p>2. The system searches your Content Library for items with matching tags</p>
+                    <p>3. Composer weaves the best-matching content into the personalized email</p>
+                    <p>4. You see which content was used in the Review Queue and Outreach History</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="flex justify-end"><button class="inline-flex items-center gap-1.5 font-medium rounded-lg transition-colors text-xs px-3.5 py-2 bg-indigo-600 text-white hover:bg-indigo-700"><span data-icon="save" data-size="13"></span>Save Content Settings</button></div>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- ═══════════════════════════════════ -->
+  <!-- MODALS                              -->
+  <!-- ═══════════════════════════════════ -->
+
+  <!-- Create Content modal -->
+  <div id="create-content-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center">
+    <div class="absolute inset-0 bg-black/40 modal-backdrop" data-close-modal></div>
+    <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between p-5 border-b border-gray-100">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-600"><span data-icon="plus" data-size="16"></span></div>
+          <div>
+            <h2 class="text-sm font-semibold text-gray-900">Create Content</h2>
+            <p class="text-xs text-gray-400">Add a new item to your Content Library</p>
+          </div>
+        </div>
+        <button data-close-modal class="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400"><span data-icon="x" data-size="16"></span></button>
+      </div>
+
+      <div class="p-5 space-y-4">
+        <div class="mb-3">
+          <label class="block text-xs font-medium text-gray-700 mb-1">Content type</label>
+          <div class="grid grid-cols-5 gap-1.5" id="create-type-grid"></div>
+        </div>
+
+        <div class="mb-3">
+          <label class="block text-xs font-medium text-gray-700 mb-1">Title</label>
+          <input id="create-title" class="w-full border border-gray-300 rounded-lg px-3 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder='e.g. "Outsourcing in Healthcare"' />
+        </div>
+
+        <div id="create-description-field" class="mb-3">
+          <label class="block text-xs font-medium text-gray-700 mb-1">Description</label>
+          <p class="text-xs text-gray-400 mb-1">Brief summary — the AI will use this when referencing your content in outreach emails.</p>
+          <textarea class="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none h-20" placeholder="What is this content about? What value does it demonstrate?"></textarea>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div class="mb-3"><label class="block text-xs font-medium text-gray-700 mb-1">Industry</label>
+            <select class="w-full border border-gray-300 rounded-lg px-3 py-1.5 text-xs"><option>General</option><option>Finance</option><option>Healthcare</option><option>Retail</option><option>Technology</option><option>Logistics</option></select>
+          </div>
+          <div class="mb-3"><label class="block text-xs font-medium text-gray-700 mb-1">Status</label>
+            <select class="w-full border border-gray-300 rounded-lg px-3 py-1.5 text-xs"><option>Draft</option><option>Published</option><option>Active</option></select>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="block text-xs font-medium text-gray-700 mb-1">Service tags</label>
+          <p class="text-xs text-gray-400 mb-1">Tag with service lines so agents can match this content to relevant opportunities.</p>
+          <div class="flex flex-wrap gap-1.5 p-2 border border-gray-300 rounded-lg bg-white min-h-[32px]"><input class="flex-1 min-w-[80px] outline-none text-xs bg-transparent placeholder-gray-400" placeholder="e.g. data entry, customer support, accounting..." /></div>
+        </div>
+
+        <div id="create-template-vars" class="mb-3 hidden">
+          <label class="block text-xs font-medium text-gray-700 mb-1">Template variables</label>
+          <p class="text-xs text-gray-400 mb-1">Use {curly braces} for merge fields the email composer will fill in.</p>
+          <div class="flex flex-wrap gap-1.5 p-2 border border-gray-300 rounded-lg bg-white min-h-[32px]" data-tags="{client},{service},{industry}"></div>
+        </div>
+
+        <div id="create-template-body" class="mb-3 hidden">
+          <label class="block text-xs font-medium text-gray-700 mb-1">Template body</label>
+          <textarea class="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none h-28 font-mono" placeholder="Dear {client},&#10;&#10;I noticed your team is looking for {service} expertise. At NoonDalton, we specialize in...&#10;&#10;Best regards"></textarea>
+        </div>
+
+        <div id="create-source-field" class="mb-3">
+          <label class="block text-xs font-medium text-gray-700 mb-1">Content source</label>
+          <div class="space-y-2">
+            <label class="flex items-center gap-2 p-2.5 rounded-xl border border-gray-100 bg-gray-50 cursor-pointer hover:border-indigo-200 transition-colors">
+              <input type="radio" name="source" checked class="accent-indigo-600" />
+              <span data-icon="spark" data-size="14" class="text-indigo-500"></span>
+              <div><p class="text-xs font-medium text-gray-800">Generate with AI</p><p class="text-xs text-gray-400">AI creates the content based on title and tags</p></div>
+            </label>
+            <label class="flex items-center gap-2 p-2.5 rounded-xl border border-gray-100 bg-gray-50 cursor-pointer hover:border-indigo-200 transition-colors">
+              <input type="radio" name="source" class="accent-indigo-600" />
+              <span data-icon="download" data-size="14" class="text-gray-400"></span>
+              <div><p class="text-xs font-medium text-gray-800">Upload existing file</p><p class="text-xs text-gray-400">PDF, DOCX, or plain text</p></div>
+            </label>
+            <label class="flex items-center gap-2 p-2.5 rounded-xl border border-gray-100 bg-gray-50 cursor-pointer hover:border-indigo-200 transition-colors">
+              <input type="radio" name="source" class="accent-indigo-600" />
+              <span data-icon="pen" data-size="14" class="text-gray-400"></span>
+              <div><p class="text-xs font-medium text-gray-800">Write manually</p><p class="text-xs text-gray-400">Enter content directly in the editor</p></div>
+            </label>
+          </div>
+        </div>
+
+        <div id="create-social-fields" class="hidden space-y-3">
+          <div class="mb-3"><label class="block text-xs font-medium text-gray-700 mb-1">Platform</label>
+            <select class="w-full border border-gray-300 rounded-lg px-3 py-1.5 text-xs"><option>LinkedIn</option><option>Twitter / X</option><option>Instagram</option></select>
+          </div>
+          <div class="mb-3"><label class="block text-xs font-medium text-gray-700 mb-1">Post content</label>
+            <textarea class="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none h-24" placeholder="Write your post or let AI generate it..."></textarea>
+          </div>
+        </div>
+
+        <div class="p-3 rounded-xl bg-indigo-50 border border-indigo-100">
+          <div class="flex items-start gap-2">
+            <span data-icon="zap" data-size="14" class="text-indigo-500 mt-0.5 shrink-0"></span>
+            <div class="text-xs text-indigo-700">
+              <p class="font-medium mb-0.5">How this connects to your pipeline</p>
+              <p>Once created, the email composer will automatically match this content to relevant opportunities based on industry and service tags. You'll see usage stats on each content card.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-between p-5 border-t border-gray-100 bg-gray-50 rounded-b-2xl">
+        <button data-close-modal class="inline-flex items-center gap-1.5 font-medium rounded-lg transition-colors text-xs px-3.5 py-2 text-gray-500 hover:bg-gray-100">Cancel</button>
+        <div class="flex gap-2">
+          <button class="inline-flex items-center gap-1.5 font-medium rounded-lg transition-colors text-xs px-3.5 py-2 bg-white text-gray-700 border border-gray-300 hover:bg-gray-50"><span data-icon="save" data-size="12"></span>Save as Draft</button>
+          <button class="inline-flex items-center gap-1.5 font-medium rounded-lg transition-colors text-xs px-3.5 py-2 bg-indigo-600 text-white hover:bg-indigo-700"><span data-icon="spark" data-size="13"></span>Create &amp; Generate</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Social channel modal (Settings > General) -->
+  <div id="social-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center">
+    <div class="absolute inset-0 bg-black/40 modal-backdrop" data-close-social></div>
+    <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4" id="social-modal-body"></div>
+  </div>
+
+  <!-- ═══════════════════════════════════ -->
+  <!-- ICONS + INTERACTIVE JAVASCRIPT      -->
+  <!-- ═══════════════════════════════════ -->
+  <script>
+    /* ─── SVG icon library ─── */
+    const ICONS = {
+      grid:'<rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/>',
+      book:'<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15z"/>',
+      brief:'<rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/>',
+      users:'<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
+      image:'<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21,15 16,10 5,21"/>',
+      file:'<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/>',
+      chart:'<line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>',
+      chat:'<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>',
+      gear:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09a1.65 1.65 0 0 0-1.08-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09a1.65 1.65 0 0 0 1.51-1.08 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1.08 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9c.26.604.852.997 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1.08z"/>',
+      radar:'<path d="M19.07 4.93A10 10 0 0 0 2 12c0 5.52 4.48 10 10 10a10 10 0 0 0 7.07-17.07z"/><path d="M12 12l4.24-4.24"/><circle cx="12" cy="12" r="2"/>',
+      target:'<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>',
+      inbox:'<polyline points="22,12 16,12 14,15 10,15 8,12 2,12"/><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/>',
+      send:'<line x1="22" y1="2" x2="11" y2="13"/><polygon points="22,2 15,22 11,13 2,9"/>',
+      mail:'<rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>',
+      search:'<circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>',
+      plus:'<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>',
+      trend:'<polyline points="23,6 13.5,15.5 8.5,10.5 1,18"/><polyline points="17,6 23,6 23,12"/>',
+      spark:'<path d="M12 3l1.912 5.813a2 2 0 0 0 1.275 1.275L21 12l-5.813 1.912a2 2 0 0 0-1.275 1.275L12 21l-1.912-5.813a2 2 0 0 0-1.275-1.275L3 12l5.813-1.912a2 2 0 0 0 1.275-1.275L12 3z"/>',
+      x:'<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>',
+      check:'<polyline points="20,6 9,17 4,12"/>',
+      clock:'<circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/>',
+      shield:'<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>',
+      pen:'<path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>',
+      trash:'<polyline points="3,6 5,6 21,6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>',
+      logout:'<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16,17 21,12 16,7"/><line x1="21" y1="12" x2="9" y2="12"/>',
+      save:'<path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17,21 17,13 7,13 7,21"/><polyline points="7,3 7,8 15,8"/>',
+      bot:'<path d="M12 8V4H8"/><rect x="2" y="8" width="20" height="12" rx="2"/><circle cx="8" cy="14" r="2"/><circle cx="16" cy="14" r="2"/>',
+      globe:'<circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>',
+      sliders:'<line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><circle cx="4" cy="12" r="2"/><circle cx="12" cy="10" r="2"/><circle cx="20" cy="14" r="2"/>',
+      code:'<polyline points="16,18 22,12 16,6"/><polyline points="8,6 2,12 8,18"/>',
+      rss:'<path d="M4 11a9 9 0 0 1 9 9"/><path d="M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/>',
+      play:'<polygon points="5,3 19,12 5,21"/>',
+      layers:'<polygon points="12,2 2,7 12,12 22,7"/><polyline points="2,17 12,22 22,17"/><polyline points="2,12 12,17 22,12"/>',
+      share2:'<circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.59 13.51 6.83 3.98"/><path d="m15.41 6.51-6.82 3.98"/>',
+      plug:'<path d="M12 22v-5"/><path d="M9 8V2"/><path d="M15 8V2"/><path d="M18 8v5a6 6 0 0 1-12 0V8z"/>',
+      arrow:'<line x1="5" y1="12" x2="19" y2="12"/><polyline points="12,5 19,12 12,19"/>',
+      refresh:'<polyline points="23,4 23,10 17,10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>',
+      alert:'<path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>',
+      download:'<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7,10 12,15 17,10"/><line x1="12" y1="15" x2="12" y2="3"/>',
+      folder:'<path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>',
+      link:'<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>',
+      eye:'<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>',
+      tag:'<path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/>',
+      zap:'<polygon points="13,2 3,14 12,14 11,22 21,10 12,10"/>',
+      filter:'<polygon points="22,3 2,3 10,12.46 10,19 14,21 14,12.46"/>',
+      key:'<path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0 3 3L22 7l-3-3m-3.5 3.5L19 4"/>',
+    };
+    function svg(name, size) {
+      size = size || 16;
+      const body = ICONS[name] || '';
+      return `<svg class="icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${body}</svg>`;
+    }
+    function paintIcons(root) {
+      (root || document).querySelectorAll('[data-icon]').forEach(el => {
+        const name = el.getAttribute('data-icon');
+        const size = parseInt(el.getAttribute('data-size') || '16', 10);
+        el.innerHTML = svg(name, size);
+        el.removeAttribute('data-icon');
+      });
+    }
+
+    /* ─── Helpers ─── */
+    function badge(label, color) {
+      color = color || 'bg-gray-100 text-gray-600';
+      return `<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${color}">${label}</span>`;
+    }
+    function stageBadge(stage) {
+      const map = {
+        "Detected": "bg-blue-100 text-blue-700",
+        "Researching": "bg-cyan-100 text-cyan-700",
+        "Contacted": "bg-indigo-100 text-indigo-700",
+        "Replied": "bg-amber-100 text-amber-700",
+        "In Conversation": "bg-purple-100 text-purple-700",
+        "Won": "bg-green-100 text-green-700",
+        "Lost": "bg-red-100 text-red-700",
+        "Customer": "bg-emerald-100 text-emerald-700",
+      };
+      return badge(stage, map[stage] || 'bg-gray-100 text-gray-600');
+    }
+    function tagsHtml(tagsCsv) {
+      return tagsCsv.split(',').filter(Boolean).map(t =>
+        `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-700 text-xs font-medium">${t}<button class="hover:text-indigo-900">${svg('x',9)}</button></span>`
+      ).join('') + `<input class="flex-1 min-w-[80px] outline-none text-xs bg-transparent placeholder-gray-400" />`;
+    }
+    function kpi(icon, label, value, sub, color) {
+      return `<div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl flex items-center justify-center ${color}">${svg(icon, 18)}</div>
+          <div>
+            <p class="text-xs text-gray-500">${label}</p>
+            <p class="text-lg font-bold text-gray-900">${value}</p>
+            ${sub ? `<p class="text-xs text-gray-400">${sub}</p>` : ''}
+          </div>
+        </div>
+      </div>`;
+    }
+
+    /* ─── Sidebar nav ─── */
+    const PAGES = {
+      dashboard:     { label: "Dashboard",       icon: "grid"   },
+      opportunities: { label: "Opportunities",   icon: "target" },
+      content:       { label: "Content Library", icon: "folder" },
+      outreach:      { label: "Outreach",        icon: "send", badge: 3 },
+      assistant:     { label: "AI Assistant",    icon: "spark"  },
+      reports:       { label: "Reports",         icon: "chart"  },
+      settings:      { label: "Settings",        icon: "gear"   },
+    };
+    const MAIN_NAV   = ["dashboard","opportunities","content","outreach","assistant","reports"];
+    const BOTTOM_NAV = ["settings"];
+    let currentPage = "dashboard";
+    let collapsed = false;
+
+    function renderNav() {
+      const main = document.getElementById('main-nav');
+      const bottom = document.getElementById('bottom-nav');
+      main.innerHTML = ''; bottom.innerHTML = '';
+
+      function navBtn(key) {
+        const p = PAGES[key]; const active = currentPage === key;
+        const btn = document.createElement('button');
+        btn.className = `w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium transition-colors ${active ? "bg-indigo-600 text-white" : "text-slate-300 hover:bg-slate-700 hover:text-white"} ${collapsed ? "justify-center" : ""}`;
+        btn.title = collapsed ? p.label : '';
+        btn.innerHTML = svg(p.icon, 16) +
+          (!collapsed ? `<span class="flex-1 text-left">${p.label}</span>` : '') +
+          (!collapsed && p.badge ? `<span class="bg-amber-500 text-white text-xs font-bold px-1.5 py-0.5 rounded-full leading-none">${p.badge}</span>` : '');
+        btn.onclick = () => navigateTo(key);
+        return btn;
+      }
+
+      MAIN_NAV.forEach(k => main.appendChild(navBtn(k)));
+      BOTTOM_NAV.forEach(k => bottom.appendChild(navBtn(k)));
+
+      const logout = document.createElement('button');
+      logout.className = `w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium text-slate-300 hover:bg-red-700/30 hover:text-red-300 ${collapsed ? "justify-center" : ""}`;
+      logout.innerHTML = svg('logout', 16) + (!collapsed ? 'Log Out' : '');
+      bottom.appendChild(logout);
+    }
+    function navigateTo(key) {
+      currentPage = key;
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.getElementById('page-' + key).classList.add('active');
+      renderNav();
+    }
+
+    /* ─── Sidebar collapse ─── */
+    document.getElementById('sidebar-toggle').addEventListener('click', () => {
+      collapsed = !collapsed;
+      const sidebar = document.getElementById('sidebar');
+      const brand = document.getElementById('sidebar-brand');
+      const user = document.getElementById('sidebar-user');
+      const header = document.getElementById('sidebar-header');
+      const tBtn = document.getElementById('sidebar-toggle');
+      if (collapsed) {
+        sidebar.classList.remove('w-52'); sidebar.classList.add('w-14');
+        brand.style.display = 'none'; user.style.display = 'none';
+        header.classList.remove('justify-between'); header.classList.add('justify-center');
+        tBtn.innerHTML = svg('arrow', 14);
+      } else {
+        sidebar.classList.remove('w-14'); sidebar.classList.add('w-52');
+        brand.style.display = ''; user.style.display = '';
+        header.classList.remove('justify-center'); header.classList.add('justify-between');
+        tBtn.innerHTML = svg('x', 14);
+      }
+      renderNav();
+    });
+
+    /* ─── DASHBOARD ─── */
+    document.getElementById('dash-kpis').innerHTML =
+      kpi('search','Detected','342','this week','bg-blue-50 text-blue-600') +
+      kpi('users','Researched','214','contacts','bg-cyan-50 text-cyan-600') +
+      kpi('mail','Contacted','156','emails','bg-indigo-50 text-indigo-600') +
+      kpi('alert','Pending Review','12','need attention','bg-amber-50 text-amber-600') +
+      kpi('chat','Replied','18','conversations','bg-purple-50 text-purple-600') +
+      kpi('check','Won','7','new clients','bg-green-50 text-green-600');
+
+    const dashFunnel = [
+      { label: "Jobs scanned by Scout",                val: "342", w: "100%", color: "bg-blue-300", icon: "🔍" },
+      { label: "Relevant opportunities (score ≥ 60%)", val: "89",  w: "26%",  color: "bg-blue-500", icon: "🎯" },
+      { label: "Contacts enriched by Researcher",      val: "214", w: "62%",  color: "bg-cyan-500", icon: "👤" },
+      { label: "Content matched from library",         val: "178", w: "52%",  color: "bg-indigo-400", icon: "📄" },
+      { label: "Personalized emails sent",             val: "156", w: "45%",  color: "bg-indigo-600", icon: "✉️" },
+      { label: "Replies received",                     val: "18",  w: "5%",   color: "bg-purple-500", icon: "💬" },
+      { label: "Deals won",                            val: "7",   w: "2%",   color: "bg-green-500",  icon: "🏆" },
+    ];
+    document.getElementById('dash-funnel').innerHTML = dashFunnel.map(f => `
+      <div class="flex items-center gap-3">
+        <span class="text-sm w-5">${f.icon}</span>
+        <span class="text-xs text-gray-600 w-56 shrink-0">${f.label}</span>
+        <div class="flex-1 h-5 bg-gray-100 rounded-full overflow-hidden"><div class="h-full ${f.color} rounded-full transition-all" style="width:${f.w}"></div></div>
+        <span class="text-xs font-semibold text-gray-700 w-10 text-right">${f.val}</span>
+      </div>`).join('');
+
+    document.getElementById('dash-bars').innerHTML =
+      [40,65,45,70,55,80,60,75,85,50,90,70,65,78].map((h,i) => `<div class="w-2 rounded-t" style="height:${h}%; background:${i%2===0 ? '#818cf8' : '#2dd4bf'}"></div>`).join('');
+
+    const dashContent = [
+      { name: "BPO Guide for Finance",      type: "Case Study", uses: 23, color: "bg-indigo-500" },
+      { name: "Data Entry Services",        type: "Proposal",   uses: 18, color: "bg-teal-500" },
+      { name: "Customer Support Excellence",type: "Whitepaper", uses: 12, color: "bg-amber-500" },
+      { name: "Follow-up Email",            type: "Template",   uses: 45, color: "bg-purple-500" },
+    ];
+    document.getElementById('dash-content').innerHTML = dashContent.map(c => `
+      <div class="flex items-center gap-2">
+        <div class="w-1 h-8 rounded-full ${c.color}"></div>
+        <div class="flex-1 min-w-0">
+          <p class="text-xs font-medium text-gray-800 truncate">${c.name}</p>
+          <p class="text-xs text-gray-400">${c.type}</p>
+        </div>
+        <span class="text-xs font-semibold text-gray-600">${c.uses}×</span>
+      </div>`).join('');
+
+    const dashTimeline = [
+      { label: "Scout",         sub: "23 leads",    color: "bg-blue-500",   done: true },
+      { label: "Research",      sub: "67 contacts", color: "bg-cyan-500",   done: true },
+      { label: "Match Content", sub: "14 assets",   color: "bg-indigo-500", done: true },
+      { label: "Compose",       sub: "45 emails",   color: "bg-purple-500", done: true },
+      { label: "Review",        sub: "12 pending",  color: "bg-amber-500",  done: false },
+      { label: "Send",          sub: "33 sent",     color: "bg-green-500",  done: true },
+    ];
+    document.getElementById('dash-timeline').innerHTML = dashTimeline.map((s,i) => `
+      <div class="flex items-center gap-2 flex-1">
+        <div class="flex-1">
+          <div class="flex items-center gap-1.5 mb-1">
+            <div class="w-5 h-5 rounded-full flex items-center justify-center text-white text-xs ${s.done ? s.color : 'bg-gray-300'}">${s.done ? svg('check',10) : (i+1)}</div>
+            <span class="text-xs font-medium text-gray-700">${s.label}</span>
+          </div>
+          <p class="text-xs text-gray-400 ml-6">${s.sub}</p>
+        </div>
+        ${i < 5 ? `<div class="w-6 h-0.5 ${s.done ? s.color : 'bg-gray-200'}"></div>` : ''}
+      </div>`).join('');
+
+    /* ─── OPPORTUNITIES ─── */
+    const opps = [
+      { company: "FinServe Global", job: "Data Entry Specialist", contact: "Sarah Chen",  role: "VP Operations",   stage: "Replied",         score: 92, kw: ["data entry","back office"],     content: "BPO Guide for Finance",    date: "Apr 15" },
+      { company: "MedTech Inc",     job: "Customer Support Lead", contact: "James Wilson",role: "Head of HR",      stage: "Contacted",       score: 87, kw: ["customer support"],              content: "Support Excellence",       date: "Apr 15" },
+      { company: "RetailMax",       job: "Accounts Payable Clerk",contact: "Ana Ruiz",    role: "Procurement Mgr", stage: "Detected",        score: 78, kw: ["accounting","BPO"],              content: "—",                        date: "Apr 14" },
+      { company: "LogiCorp",        job: "Back Office Manager",   contact: "Mike Ross",   role: "COO",             stage: "Won",             score: 95, kw: ["back office","outsourcing"],    content: "Outsourcing Playbook",     date: "Apr 12" },
+      { company: "StartupXYZ",      job: "Virtual Assistant",     contact: "Lisa Park",   role: "Founder",         stage: "In Conversation", score: 65, kw: ["outsourcing"],                   content: "Follow-up Template",       date: "Apr 10" },
+      { company: "DataFlow Inc",    job: "Data Analyst",          contact: "Tom Brown",   role: "VP Data",         stage: "Customer",        score: 88, kw: ["data entry"],                    content: "Data Entry Services",      date: "Mar 28" },
+    ];
+    const stages = ["All","Detected","Researching","Contacted","Replied","In Conversation","Won","Customer","Lost"];
+    let stageFilter = "All";
+
+    function renderOppTabs() {
+      const c = document.getElementById('opp-stage-tabs'); c.innerHTML = '';
+      stages.forEach(s => {
+        const count = s === "All" ? opps.length : opps.filter(o => o.stage === s).length;
+        const active = stageFilter === s;
+        const b = document.createElement('button');
+        b.className = `flex-1 py-2 px-2 rounded-lg text-xs font-medium transition-colors text-center ${active ? "bg-indigo-600 text-white" : "bg-gray-50 text-gray-600 hover:bg-gray-100"}`;
+        b.innerHTML = `<span class="block">${s}</span><span class="text-lg font-bold ${active ? 'text-white' : 'text-gray-900'}">${count}</span>`;
+        b.onclick = () => { stageFilter = s; renderOpp(); };
+        c.appendChild(b);
+      });
+    }
+    function renderOppTable() {
+      const filtered = stageFilter === "All" ? opps : opps.filter(o => o.stage === stageFilter);
+      document.getElementById('opp-tbody').innerHTML = filtered.map(o => {
+        const sc = o.score >= 80 ? "text-green-600" : o.score >= 70 ? "text-amber-600" : "text-gray-500";
+        return `<tr class="hover:bg-slate-50 cursor-pointer">
+          <td class="px-4 py-3">
+            <p class="font-medium text-gray-900">${o.company}</p>
+            <div class="flex gap-1 mt-0.5">${o.kw.map(k => `<span class="px-1.5 py-0.5 bg-indigo-50 text-indigo-600 rounded text-xs">${k}</span>`).join('')}</div>
+          </td>
+          <td class="px-4 py-3 text-indigo-600 font-medium">${o.job}</td>
+          <td class="px-4 py-3">
+            <p class="text-gray-800">${o.contact}</p>
+            <p class="text-gray-400">${o.role}</p>
+          </td>
+          <td class="px-4 py-3">${stageBadge(o.stage)}</td>
+          <td class="px-4 py-3"><span class="text-xs font-bold ${sc}">${o.score}%</span></td>
+          <td class="px-4 py-3">${o.content !== "—" ? `<span class="inline-flex items-center gap-1 text-xs text-indigo-600">${svg('link',10)}${o.content}</span>` : '<span class="text-gray-300">—</span>'}</td>
+          <td class="px-4 py-3 text-gray-500">${o.date}</td>
+        </tr>`;
+      }).join('');
+    }
+    function renderOpp() { renderOppTabs(); renderOppTable(); }
+
+    /* ─── CONTENT LIBRARY ─── */
+    const contentItems = [
+      { title: "BPO Guide for Finance",         type: "Case Study",  industry: "Finance",    services: ["data entry","back office"], status: "Published",    uses: 23, date: "Apr 15" },
+      { title: "BPO Proposal for Fintech",      type: "Proposal",    industry: "Finance",    services: ["BPO"],                       status: "Sent",         uses: 8,  date: "Apr 14" },
+      { title: "Follow-up Email",               type: "Template",    industry: "General",    services: ["outreach"],                  status: "Active",       uses: 45, date: "Apr 14" },
+      { title: "Customer Support Excellence",   type: "Whitepaper",  industry: "Healthcare", services: ["customer support"],          status: "Published",    uses: 12, date: "Apr 12" },
+      { title: "Outsourcing Playbook 2026",     type: "Case Study",  industry: "General",    services: ["outsourcing","BPO"],         status: "Draft",        uses: 0,  date: "Apr 10" },
+      { title: "Cold Outreach – Data Entry",    type: "Template",    industry: "General",    services: ["data entry"],                status: "Active",       uses: 31, date: "Apr 8" },
+      { title: "LinkedIn Posts: Q2",            type: "Social Post", industry: "General",    services: ["brand"],                     status: "Generating...",uses: 0,  date: "Apr 8" },
+      { title: "Data Entry Services",           type: "Proposal",    industry: "Retail",     services: ["data entry","accounting"],   status: "Accepted",     uses: 18, date: "Apr 5" },
+    ];
+    const contentTypes = ["All","Case Study","Proposal","Template","Whitepaper","Social Post"];
+    let typeFilter = "All";
+
+    function typeIcon(t) {
+      const m = { "Case Study": "book", "Proposal": "brief", "Template": "file", "Whitepaper": "layers", "Social Post": "share2" };
+      return m[t] || "file";
+    }
+    function typeColor(t) {
+      const m = { "Case Study": "text-indigo-600 bg-indigo-50", "Proposal": "text-teal-600 bg-teal-50", "Template": "text-amber-600 bg-amber-50", "Whitepaper": "text-purple-600 bg-purple-50", "Social Post": "text-pink-600 bg-pink-50" };
+      return m[t] || "text-gray-600 bg-gray-50";
+    }
+    function statusColor(s) {
+      const m = { "Published": "bg-green-100 text-green-700", "Active": "bg-green-100 text-green-700", "Sent": "bg-blue-100 text-blue-700", "Accepted": "bg-green-100 text-green-700", "Draft": "bg-gray-100 text-gray-600", "Generating...": "bg-yellow-100 text-yellow-700" };
+      return m[s] || "bg-gray-100 text-gray-600";
+    }
+    function renderContentTabs() {
+      const c = document.getElementById('content-type-tabs'); c.innerHTML = '';
+      contentTypes.forEach(t => {
+        const count = t === "All" ? contentItems.length : contentItems.filter(i => i.type === t).length;
+        const active = typeFilter === t;
+        const b = document.createElement('button');
+        b.className = `px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${active ? "bg-indigo-600 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`;
+        b.innerHTML = t + (t !== "All" ? `<span class="ml-1 opacity-60">${count}</span>` : '');
+        b.onclick = () => { typeFilter = t; renderContent(); };
+        c.appendChild(b);
+      });
+    }
+    function renderContentGrid() {
+      const filtered = typeFilter === "All" ? contentItems : contentItems.filter(i => i.type === typeFilter);
+      document.getElementById('content-grid').innerHTML = filtered.map(item => `
+        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 hover:border-indigo-200 cursor-pointer transition-colors group">
+          <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center gap-2">
+              <div class="w-8 h-8 rounded-lg flex items-center justify-center ${typeColor(item.type)}">${svg(typeIcon(item.type), 14)}</div>
+              ${badge(item.type, typeColor(item.type))}
+            </div>
+            ${badge(item.status, statusColor(item.status))}
+          </div>
+          <p class="text-sm font-medium text-gray-900 mb-1">${item.title}</p>
+          <p class="text-xs text-gray-400 mb-2">${item.industry} · Updated ${item.date}</p>
+          <div class="flex flex-wrap gap-1 mb-3">
+            ${item.services.map(s => `<span class="px-1.5 py-0.5 bg-indigo-50 text-indigo-600 rounded text-xs">${s}</span>`).join('')}
+          </div>
+          <div class="flex items-center justify-between pt-2 border-t border-gray-50">
+            <span class="text-xs text-gray-400 flex items-center gap-1">
+              ${item.uses > 0 ? `${svg('link',10)} Used in ${item.uses} emails` : 'Not yet used'}
+            </span>
+            <div class="flex gap-0.5 opacity-0 group-hover:opacity-100">
+              <button class="p-1 rounded hover:bg-gray-100 text-gray-400">${svg('eye',11)}</button>
+              <button class="p-1 rounded hover:bg-gray-100 text-gray-400">${svg('pen',11)}</button>
+            </div>
+          </div>
+        </div>`).join('');
+    }
+    function renderContent() { renderContentTabs(); renderContentGrid(); }
+
+    /* ─── CREATE CONTENT MODAL ─── */
+    let createType = "Case Study";
+    function renderCreateTypeGrid() {
+      const grid = document.getElementById('create-type-grid'); grid.innerHTML = '';
+      ["Case Study","Proposal","Template","Whitepaper","Social Post"].forEach(t => {
+        const active = createType === t;
+        const b = document.createElement('button');
+        b.className = `flex flex-col items-center gap-1.5 p-2.5 rounded-xl border text-center transition-colors ${active ? 'border-indigo-300 bg-indigo-50 text-indigo-700' : 'border-gray-100 bg-gray-50 text-gray-500 hover:border-gray-200'}`;
+        b.innerHTML = svg(typeIcon(t), 16) + `<span class="text-xs font-medium leading-tight">${t}</span>`;
+        b.onclick = () => { createType = t; updateCreateModal(); };
+        grid.appendChild(b);
+      });
+    }
+    function updateCreateModal() {
+      renderCreateTypeGrid();
+      const titleInput = document.getElementById('create-title');
+      titleInput.placeholder = createType === "Template" ? 'e.g. "Follow-up after demo"'
+                              : createType === "Proposal" ? 'e.g. "BPO Proposal for [Client]"'
+                              : 'e.g. "Outsourcing in Healthcare"';
+      document.getElementById('create-description-field').classList.toggle('hidden', createType === "Social Post");
+      document.getElementById('create-template-vars').classList.toggle('hidden', createType !== "Template");
+      document.getElementById('create-template-body').classList.toggle('hidden', createType !== "Template");
+      const showSource = createType === "Case Study" || createType === "Whitepaper" || createType === "Proposal";
+      document.getElementById('create-source-field').classList.toggle('hidden', !showSource);
+      document.getElementById('create-social-fields').classList.toggle('hidden', createType !== "Social Post");
+    }
+    document.getElementById('open-create-content').addEventListener('click', () => {
+      document.getElementById('create-content-modal').classList.remove('hidden');
+      updateCreateModal();
+      paintIcons(document.getElementById('create-content-modal'));
+      // paint dynamic tag rows in modal
+      document.querySelectorAll('#create-content-modal [data-tags]').forEach(el => { el.innerHTML = tagsHtml(el.getAttribute('data-tags')); });
+    });
+    document.querySelectorAll('[data-close-modal]').forEach(b => b.addEventListener('click', () => {
+      document.getElementById('create-content-modal').classList.add('hidden');
+    }));
+
+    /* ─── OUTREACH ─── */
+    const reviewEmails = [
+      { to: "Sarah Chen",   role: "VP Operations",     company: "FinServe Global", vacancy: "Data Entry Specialist", score: 92, contentRef: "BPO Guide for Finance",  subject: "Optimize your data entry with NoonDalton",   preview: "Dear Sarah,\n\nI noticed that FinServe Global is looking for a Data Entry Specialist. At NoonDalton, we help financial services companies scale their back-office operations with dedicated teams.\n\nDrawing from our experience documented in our BPO Guide for Finance, we've helped similar organizations reduce operational costs by up to 40%.\n\nWould you have 15 minutes this week for a brief call?" },
+      { to: "James Wilson", role: "Head of HR",         company: "MedTech Inc",     vacancy: "Customer Support Lead", score: 74, contentRef: "Support Excellence",      subject: "Specialized Customer Support for MedTech",    preview: "Dear James,\n\nI saw that MedTech Inc is looking for a Customer Support Lead. At NoonDalton, we have extensive experience providing specialized customer support teams for the healthcare sector.\n\nOur whitepaper on Customer Support Excellence outlines the frameworks we use with healthcare clients.\n\nCould we schedule a 20-minute demo?" },
+      { to: "Ana Ruiz",     role: "Procurement Mgr",   company: "RetailMax",       vacancy: "Accounts Payable Clerk",score: 68, contentRef: "Data Entry Services",     subject: "Accounts Payable as a Service for RetailMax", preview: "Dear Ana,\n\nI noticed the AP Clerk opening at RetailMax. NoonDalton offers comprehensive accounts payable services that could reduce your operational costs by up to 40%.\n\nOur Data Entry Services proposal for the retail sector details our approach." },
+    ];
+    const history = [
+      { name: "Sarah Chen", co: "FinServe Global", subj: "Optimize your data entry...", st: "Replied", stc: "bg-green-100 text-green-700", date: "Apr 15", score: "92%", content: "BPO Guide" },
+      { name: "Mike Ross",  co: "LogiCorp",        subj: "Back office outsourcing...",  st: "Opened",  stc: "bg-blue-100 text-blue-700",   date: "Apr 15", score: "95%", content: "Outsourcing Playbook" },
+      { name: "Lisa Park",  co: "DataFlow",        subj: "Professional data entry...",  st: "Sent",    stc: "bg-gray-100 text-gray-600",   date: "Apr 14", score: "88%", content: "Data Entry Services" },
+      { name: "Tom Brown",  co: "HealthCo",        subj: "BPO customer support...",     st: "Opened",  stc: "bg-blue-100 text-blue-700",   date: "Apr 14", score: "81%", content: "Support Excellence" },
+      { name: "Ana Ruiz",   co: "RetailMax",       subj: "AP as a service...",          st: "Bounced", stc: "bg-red-100 text-red-700",     date: "Apr 13", score: "68%", content: "Data Entry Services" },
+    ];
+    let outreachTab = "review", reviewSelected = 0;
+
+    function renderReview() {
+      document.getElementById('review-list').innerHTML = reviewEmails.map((em, i) => `
+        <div data-idx="${i}" class="review-card p-3 rounded-xl border cursor-pointer transition-colors ${reviewSelected === i ? 'border-indigo-300 bg-indigo-50' : 'border-gray-100 bg-white hover:border-gray-200'}">
+          <div class="flex items-center justify-between mb-1">
+            <p class="text-xs font-semibold text-gray-900">${em.to}</p>
+            <span class="text-xs font-bold ${em.score >= 80 ? 'text-green-600' : 'text-amber-600'}">${em.score}%</span>
+          </div>
+          <p class="text-xs text-gray-500">${em.role} · ${em.company}</p>
+          <p class="text-xs text-gray-400 mt-1 truncate">${em.subject}</p>
+          <div class="flex items-center gap-2 mt-1.5">
+            ${em.score >= 80 ? badge('Auto-approved','bg-green-100 text-green-700') : ''}
+            <span class="text-xs text-indigo-500 flex items-center gap-0.5">${svg('link',9)}${em.contentRef}</span>
+          </div>
+        </div>`).join('');
+      document.querySelectorAll('.review-card').forEach(c => c.addEventListener('click', () => {
+        reviewSelected = parseInt(c.getAttribute('data-idx'),10); renderReview();
+      }));
+
+      const e = reviewEmails[reviewSelected];
+      document.getElementById('review-preview').innerHTML = `
+        <div class="flex items-center justify-between mb-4">
+          <div>
+            <p class="text-sm font-semibold text-gray-900">${e.to}</p>
+            <p class="text-xs text-gray-500">${e.role} @ ${e.company}</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-sm font-bold ${e.score >= 80 ? 'text-green-600' : 'text-amber-600'}">${e.score}%</span>
+            ${badge(e.score >= 80 ? 'High confidence' : 'Review suggested', e.score >= 80 ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700')}
+          </div>
+        </div>
+        <div class="flex gap-3 mb-3">
+          <div class="flex-1 p-2 bg-gray-50 rounded-lg">
+            <p class="text-xs text-gray-500">Opportunity</p>
+            <p class="text-xs font-medium text-gray-800">${e.vacancy} @ ${e.company}</p>
+          </div>
+          <div class="flex-1 p-2 bg-indigo-50 rounded-lg">
+            <p class="text-xs text-indigo-400">Content referenced</p>
+            <p class="text-xs font-medium text-indigo-700 flex items-center gap-1">${svg('link',10)}${e.contentRef}</p>
+          </div>
+        </div>
+        <div class="mb-3">
+          <p class="text-xs text-gray-500 mb-1">Subject:</p>
+          <p class="text-xs font-semibold text-gray-900">${e.subject}</p>
+        </div>
+        <div class="mb-4 p-3 bg-white border border-gray-200 rounded-lg">
+          <pre class="text-xs text-gray-700 whitespace-pre-wrap font-sans leading-relaxed">${e.preview}</pre>
+        </div>
+        <div class="flex gap-2 justify-end">
+          <button class="inline-flex items-center gap-1.5 font-medium rounded-lg transition-colors text-xs px-2.5 py-1.5 text-gray-500 hover:bg-gray-100">${svg('refresh',12)}Regenerate</button>
+          <button class="inline-flex items-center gap-1.5 font-medium rounded-lg transition-colors text-xs px-2.5 py-1.5 bg-white text-gray-700 border border-gray-300 hover:bg-gray-50">${svg('pen',12)}Edit</button>
+          <button class="inline-flex items-center gap-1.5 font-medium rounded-lg transition-colors text-xs px-2.5 py-1.5 bg-red-600 text-white hover:bg-red-700">${svg('x',12)}Reject</button>
+          <button class="inline-flex items-center gap-1.5 font-medium rounded-lg transition-colors text-xs px-3.5 py-2 bg-teal-500 text-white hover:bg-teal-600">${svg('check',13)}Approve & Send</button>
+        </div>`;
+    }
+
+    document.getElementById('history-filters').innerHTML = ["All","Sent","Opened","Replied","Bounced"].map((t,i) =>
+      `<button class="px-3 py-1.5 rounded-full text-xs font-medium ${i===0 ? 'bg-indigo-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}">${t}</button>`).join('');
+    document.getElementById('history-tbody').innerHTML = history.map(o => `
+      <tr class="hover:bg-slate-50 cursor-pointer">
+        <td class="px-4 py-3 font-medium text-gray-900">${o.name}</td>
+        <td class="px-4 py-3 text-gray-600">${o.co}</td>
+        <td class="px-4 py-3 text-gray-500 truncate max-w-[180px]">${o.subj}</td>
+        <td class="px-4 py-3"><span class="text-xs text-indigo-600 flex items-center gap-1">${svg('link',10)}${o.content}</span></td>
+        <td class="px-4 py-3">${badge(o.st, o.stc)}</td>
+        <td class="px-4 py-3 text-gray-500">${o.date}</td>
+        <td class="px-4 py-3 font-semibold text-indigo-600">${o.score}</td>
+      </tr>`).join('');
+
+    document.querySelectorAll('.outreach-tab').forEach(t => t.addEventListener('click', () => {
+      outreachTab = t.getAttribute('data-tab');
+      document.querySelectorAll('.outreach-tab').forEach(b => {
+        if (b.getAttribute('data-tab') === outreachTab) {
+          b.classList.add('bg-white','text-gray-900','shadow-sm'); b.classList.remove('text-gray-500');
+        } else {
+          b.classList.remove('bg-white','text-gray-900','shadow-sm'); b.classList.add('text-gray-500');
+        }
+      });
+      document.getElementById('outreach-review').classList.toggle('hidden', outreachTab !== 'review');
+      document.getElementById('outreach-history').classList.toggle('hidden', outreachTab !== 'history');
+      document.getElementById('outreach-actions').classList.toggle('hidden', outreachTab !== 'review');
+    }));
+
+    /* ─── ASSISTANT ─── */
+    const suggestions = [
+      { icon: "target", text: "Find more companies like FinServe Global", color: "text-indigo-600 bg-indigo-50" },
+      { icon: "file",   text: "Draft a proposal for MedTech's support needs", color: "text-teal-600 bg-teal-50" },
+      { icon: "mail",   text: "Write a follow-up for the LogiCorp deal", color: "text-purple-600 bg-purple-50" },
+      { icon: "book",   text: "Create a whitepaper on healthcare outsourcing", color: "text-amber-600 bg-amber-50" },
+    ];
+    document.getElementById('assistant-suggestions').innerHTML = suggestions.map(s => `
+      <button class="flex items-center gap-2 p-2.5 bg-white rounded-lg border border-gray-100 hover:border-indigo-200 transition-colors text-left">
+        <div class="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${s.color}">${svg(s.icon,12)}</div>
+        <span class="text-xs text-gray-700">${s.text}</span>
+      </button>`).join('');
+
+    /* ─── REPORTS ─── */
+    document.getElementById('reports-kpis').innerHTML =
+      kpi('target','Win Rate','8.2%','from pipeline','bg-green-50 text-green-600') +
+      kpi('mail','Open Rate','46%','emails opened','bg-blue-50 text-blue-600') +
+      kpi('chat','Reply Rate','11.5%','responses','bg-purple-50 text-purple-600') +
+      kpi('clock','Avg. Time to Reply','2.3d','days','bg-amber-50 text-amber-600');
+
+    document.getElementById('reports-bars').innerHTML =
+      [35,55,40,70,60,45,75,50,80,65,55,70,60,85].map((h,i) => `<div class="w-3 rounded-t" style="height:${h}%; background:${i%2===0 ? '#818cf8' : '#2dd4bf'}"></div>`).join('');
+
+    const reportsContent = [
+      { name: "BPO Guide for Finance", replies: 8, sent: 23, rate: "35%" },
+      { name: "Follow-up Template",    replies: 5, sent: 45, rate: "11%" },
+      { name: "Data Entry Services",   replies: 3, sent: 18, rate: "17%" },
+      { name: "Support Excellence",    replies: 2, sent: 12, rate: "17%" },
+    ];
+    document.getElementById('reports-content').innerHTML = reportsContent.map(c => `
+      <div class="flex items-center justify-between p-2 bg-gray-50 rounded-lg">
+        <div>
+          <p class="text-xs font-medium text-gray-800">${c.name}</p>
+          <p class="text-xs text-gray-400">${c.sent} emails · ${c.replies} replies</p>
+        </div>
+        <span class="text-xs font-bold text-green-600">${c.rate}</span>
+      </div>`).join('');
+
+    const industries = [
+      { industry: "Finance",    detected: 45, won: 3, rate: "6.7%" },
+      { industry: "Healthcare", detected: 28, won: 2, rate: "7.1%" },
+      { industry: "Retail",     detected: 19, won: 1, rate: "5.3%" },
+      { industry: "Technology", detected: 35, won: 1, rate: "2.9%" },
+    ];
+    document.getElementById('reports-industry').innerHTML = industries.map(ind => `
+      <div class="p-3 bg-gray-50 rounded-xl text-center">
+        <p class="text-xs font-medium text-gray-700">${ind.industry}</p>
+        <p class="text-lg font-bold text-gray-900 mt-1">${ind.detected}</p>
+        <p class="text-xs text-gray-400">detected</p>
+        <p class="text-xs font-semibold text-green-600 mt-1">${ind.won} won (${ind.rate})</p>
+      </div>`).join('');
+
+    /* ─── SETTINGS ─── */
+    // tag rows
+    document.querySelectorAll('[data-tags]').forEach(el => { el.innerHTML = tagsHtml(el.getAttribute('data-tags')); });
+
+    // Settings tabs
+    document.querySelectorAll('.settings-tab').forEach(t => t.addEventListener('click', () => {
+      const tab = t.getAttribute('data-tab');
+      document.querySelectorAll('.settings-tab').forEach(b => {
+        if (b.getAttribute('data-tab') === tab) { b.classList.add('bg-white','text-gray-900','shadow-sm'); b.classList.remove('text-gray-500'); }
+        else { b.classList.remove('bg-white','text-gray-900','shadow-sm'); b.classList.add('text-gray-500'); }
+      });
+      document.getElementById('settings-general').classList.toggle('hidden', tab !== 'general');
+      document.getElementById('settings-pipeline').classList.toggle('hidden', tab !== 'pipeline');
+      document.getElementById('settings-content').classList.toggle('hidden', tab !== 'content');
+    }));
+
+    // Pipeline toggle
+    let pipelineOn = true;
+    document.getElementById('pipeline-toggle-btn').addEventListener('click', () => {
+      pipelineOn = !pipelineOn;
+      const card = document.getElementById('pipeline-toggle-card');
+      const icon = document.getElementById('pipeline-toggle-icon');
+      const text = document.getElementById('pipeline-toggle-text');
+      const knob = document.getElementById('pipeline-toggle-knob');
+      const btn  = document.getElementById('pipeline-toggle-btn');
+      const dot  = document.getElementById('settings-pipeline-dot');
+      if (pipelineOn) {
+        card.className = 'flex items-center justify-between p-3.5 rounded-2xl border border-green-200 bg-green-50';
+        icon.classList.add('text-green-600'); icon.classList.remove('text-gray-400');
+        text.textContent = 'Active — scanning every 24 hours';
+        btn.style.backgroundColor = '#16a34a'; knob.style.transform = 'translateX(20px)';
+        if (dot) dot.classList.remove('hidden');
+      } else {
+        card.className = 'flex items-center justify-between p-3.5 rounded-2xl border border-gray-200 bg-gray-50';
+        icon.classList.remove('text-green-600'); icon.classList.add('text-gray-400');
+        text.textContent = 'Inactive — enable to start';
+        btn.style.backgroundColor = '#d1d5db'; knob.style.transform = 'translateX(0)';
+        if (dot) dot.classList.add('hidden');
+      }
+    });
+
+    // Threshold slider
+    const thSlider = document.getElementById('threshold-slider');
+    thSlider.addEventListener('input', () => {
+      document.getElementById('threshold-label').textContent = thSlider.value;
+      document.getElementById('threshold-pill').textContent  = thSlider.value + '%';
+    });
+
+    /* ─── SOCIAL CHANNELS + MODAL ─── */
+    const socialChannels = [
+      { l: "LinkedIn",    c: "bg-blue-600", ok: true,  user: "noondalton-sales" },
+      { l: "Medium",      c: "bg-black",    ok: false, user: "" },
+      { l: "Facebook",    c: "bg-blue-500", ok: true,  user: "NoonDaltonBPO" },
+      { l: "Twitter / X", c: "bg-gray-900", ok: false, user: "" },
+      { l: "Instagram",   c: "bg-gradient-to-tr from-yellow-400 via-pink-500 to-purple-600", ok: false, user: "" },
+      { l: "TikTok",      c: "bg-black",    ok: false, user: "" },
+    ];
+    document.getElementById('social-channels').innerHTML = socialChannels.map((n,i) => `
+      <div class="flex items-center justify-between p-3 rounded-xl border border-gray-100 bg-gray-50 hover:border-indigo-200 transition-colors">
+        <div class="flex items-center gap-2.5">
+          <div class="w-7 h-7 rounded-lg ${n.c} flex items-center justify-center"><span class="text-white text-xs font-bold">${n.l[0]}</span></div>
+          <div>
+            <span class="text-xs font-medium text-gray-800">${n.l}</span>
+            ${n.ok ? `<p class="text-xs text-gray-400">@${n.user}</p>` : ''}
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          ${badge(n.ok ? 'Connected' : 'Not connected', n.ok ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-400')}
+          <button data-social-idx="${i}" class="p-1.5 rounded-lg hover:bg-white border border-transparent hover:border-gray-200 transition-colors text-gray-400">${svg('gear',12)}</button>
+        </div>
+      </div>`).join('');
+
+    function openSocialModal(idx) {
+      const m = socialChannels[idx];
+      const isLinkedInOrFB = m.l === "LinkedIn" || m.l === "Facebook";
+      const isMultiId = m.l === "Twitter / X" || m.l === "Facebook" || m.l === "Instagram";
+      const isTikTok  = m.l === "TikTok";
+
+      const html = `
+        <div class="flex items-center justify-between p-5 border-b border-gray-100">
+          <div class="flex items-center gap-2.5">
+            <div class="w-9 h-9 rounded-xl ${m.c} flex items-center justify-center"><span class="text-white text-sm font-bold">${m.l[0]}</span></div>
+            <div>
+              <h2 class="text-sm font-semibold text-gray-900">${m.l}</h2>
+              <p class="text-xs text-gray-400">${m.ok ? "Edit connection settings" : "Connect your account"}</p>
+            </div>
+          </div>
+          <button data-close-social class="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400">${svg('x',16)}</button>
+        </div>
+        <div class="p-5 space-y-4">
+          ${m.ok ? `<div class="flex items-center gap-2 p-2.5 rounded-xl bg-green-50 border border-green-100">${svg('check',14)}<span class="text-xs text-green-700 font-medium">Currently connected as @${m.user}</span></div>` : ''}
+          <div class="mb-3">
+            <label class="block text-xs font-medium text-gray-700 mb-1">Account / Username</label>
+            <input class="w-full border border-gray-300 rounded-lg px-3 py-1.5 text-xs" value="${m.ok ? m.user : ''}" placeholder="Your ${m.l} username or handle" />
+          </div>
+          ${isLinkedInOrFB ? `
+            <div class="p-3 rounded-xl bg-blue-50 border border-blue-100">
+              <div class="flex items-start gap-2">
+                ${svg('shield',14)}
+                <div class="text-xs text-blue-700">
+                  <p class="font-medium mb-0.5">OAuth recommended</p>
+                  <p>${m.l} supports secure OAuth login. Click the button below to authenticate directly.</p>
+                </div>
+              </div>
+            </div>
+            <button class="w-full justify-center inline-flex items-center gap-1.5 font-medium rounded-lg transition-colors text-xs px-3.5 py-2 bg-indigo-600 text-white hover:bg-indigo-700">${svg('key',13)}Connect with ${m.l} OAuth</button>
+            <div class="flex items-center gap-3 text-xs text-gray-400">
+              <div class="flex-1 h-px bg-gray-200"></div><span>or enter credentials manually</span><div class="flex-1 h-px bg-gray-200"></div>
+            </div>
+          ` : ''}
+          <div class="mb-3">
+            <label class="block text-xs font-medium text-gray-700 mb-1">API Key / Access Token</label>
+            <p class="text-xs text-gray-400 mb-1">Required for automated posting and analytics</p>
+            <input type="password" class="w-full border border-gray-300 rounded-lg px-3 py-1.5 text-xs" value="${m.ok ? '••••••••••••••••' : ''}" placeholder="Paste your API key or access token" />
+          </div>
+          <div class="mb-3">
+            <label class="block text-xs font-medium text-gray-700 mb-1">API Secret / Token Secret</label>
+            <p class="text-xs text-gray-400 mb-1">Some platforms require a secret alongside the key</p>
+            <input type="password" class="w-full border border-gray-300 rounded-lg px-3 py-1.5 text-xs" value="${m.ok ? '••••••••••••••••' : ''}" placeholder="Paste your API secret" />
+          </div>
+          ${isMultiId ? `
+            <div class="mb-3">
+              <label class="block text-xs font-medium text-gray-700 mb-1">Page / Account ID</label>
+              <p class="text-xs text-gray-400 mb-1">The ${m.l} page or account ID for publishing</p>
+              <input class="w-full border border-gray-300 rounded-lg px-3 py-1.5 text-xs" placeholder="e.g. 123456789" />
+            </div>` : ''}
+          ${isTikTok ? `
+            <div class="mb-3">
+              <label class="block text-xs font-medium text-gray-700 mb-1">Open ID</label>
+              <p class="text-xs text-gray-400 mb-1">Your TikTok Open Platform application ID</p>
+              <input class="w-full border border-gray-300 rounded-lg px-3 py-1.5 text-xs" placeholder="e.g. aw7xxx..." />
+            </div>` : ''}
+          <div class="p-3 rounded-xl bg-gray-50 border border-gray-100">
+            <p class="text-xs font-medium text-gray-700 mb-1.5">Permissions needed</p>
+            <div class="space-y-1">
+              <div class="flex items-center gap-2 text-xs"><span class="text-green-500">${svg('check',10)}</span><span class="text-gray-700">Read profile information</span></div>
+              <div class="flex items-center gap-2 text-xs"><span class="text-green-500">${svg('check',10)}</span><span class="text-gray-700">Publish posts and content</span></div>
+              <div class="flex items-center gap-2 text-xs"><span class="text-green-500">${svg('check',10)}</span><span class="text-gray-700">Read engagement analytics</span></div>
+              <div class="flex items-center gap-2 text-xs"><span class="text-gray-300">${svg('check',10)}</span><span class="text-gray-400">Manage comments</span><span class="text-xs text-gray-300">(optional)</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="flex items-center justify-between p-5 border-t border-gray-100 bg-gray-50 rounded-b-2xl">
+          <div>
+            ${m.ok ? `<button class="inline-flex items-center gap-1.5 font-medium rounded-lg transition-colors text-xs px-3.5 py-2 text-red-500 hover:text-red-700 hover:bg-red-50">${svg('trash',12)}Disconnect</button>` : ''}
+          </div>
+          <div class="flex gap-2">
+            <button data-close-social class="inline-flex items-center gap-1.5 font-medium rounded-lg transition-colors text-xs px-3.5 py-2 bg-white text-gray-700 border border-gray-300 hover:bg-gray-50">Cancel</button>
+            <button class="inline-flex items-center gap-1.5 font-medium rounded-lg transition-colors text-xs px-2.5 py-1.5 bg-white text-gray-700 border border-gray-300 hover:bg-gray-50">${svg('play',11)}Test Connection</button>
+            <button class="inline-flex items-center gap-1.5 font-medium rounded-lg transition-colors text-xs px-3.5 py-2 bg-indigo-600 text-white hover:bg-indigo-700">${svg('save',12)}${m.ok ? 'Update' : 'Connect'}</button>
+          </div>
+        </div>
+      `;
+      document.getElementById('social-modal-body').innerHTML = html;
+      document.getElementById('social-modal').classList.remove('hidden');
+
+      // wire close
+      document.querySelectorAll('[data-close-social]').forEach(b => b.addEventListener('click', () => {
+        document.getElementById('social-modal').classList.add('hidden');
+      }));
+    }
+
+    document.querySelectorAll('[data-social-idx]').forEach(b => {
+      b.addEventListener('click', () => openSocialModal(parseInt(b.getAttribute('data-social-idx'),10)));
+    });
+
+    /* ─── INITIAL PAINT ─── */
+    paintIcons(document);
+    renderNav();
+    renderOpp();
+    renderContent();
+    renderReview();
+  </script>
+</body>
+</html>

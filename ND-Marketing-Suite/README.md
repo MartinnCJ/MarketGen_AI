@@ -285,7 +285,3 @@ The default model is configurable via `GEMINI_DEFAULT_MODEL` env var or via the 
 ## License
 
 Proprietary — NoonDalton © 2026
-
-# MarketGen_AI
-
-# Proyecto SaaS de automatización de marketing con React, FastAPI y PostgreSQL.
