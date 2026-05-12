@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { getDashboardData } from "./api/dashboardApi";
 
 /* ═══════════════════════════════════════════════════════════════ */
 /*  INLINE SVG ICONS                                               */
@@ -149,7 +150,24 @@ const Field = ({ label, hint, children }) => (
 /*  PAGE: UNIFIED DASHBOARD                                        */
 /* ═══════════════════════════════════════════════════════════════ */
 function DashboardPage() {
+    const [dashboardData, setDashboardData] = useState({
+    detected: 0,
+    researched: 0,
+    contacted: 0,
+    pending_review: 0,
+    replied: 0,
+    won: 0,
+     });
+
+  useEffect(() => {
+  getDashboardData().then((data) => {
+    console.log("Datos recibidos:", data);
+    setDashboardData(data);
+    });
+        }, []);
+
   return (
+    
     <div className="space-y-5">
       <div className="flex items-center justify-between">
         <div>
@@ -164,12 +182,12 @@ function DashboardPage() {
 
       {/* Full-funnel KPI row */}
       <div className="grid grid-cols-6 gap-3">
-        <KpiCard icon={SearchIcon} label="Detected" value="342" sub="this week" color="bg-blue-50 text-blue-600" />
-        <KpiCard icon={UsersIcon} label="Researched" value="214" sub="contacts" color="bg-cyan-50 text-cyan-600" />
-        <KpiCard icon={MailIcon} label="Contacted" value="156" sub="emails" color="bg-indigo-50 text-indigo-600" />
-        <KpiCard icon={AlertIcon} label="Pending Review" value="12" sub="need attention" color="bg-amber-50 text-amber-600" />
-        <KpiCard icon={ChatIcon} label="Replied" value="18" sub="conversations" color="bg-purple-50 text-purple-600" />
-        <KpiCard icon={CheckIcon} label="Won" value="7" sub="new clients" color="bg-green-50 text-green-600" />
+        <KpiCard icon={SearchIcon} label="Detected" value={dashboardData.detected} sub="this week" color="bg-blue-50 text-blue-600" />
+        <KpiCard icon={UsersIcon} label="Researched" value={dashboardData.researched} sub="contacts" color="bg-cyan-50 text-cyan-600" />            
+        <KpiCard icon={MailIcon} label="Contacted" value={dashboardData.contacted} sub="emails" color="bg-indigo-50 text-indigo-600" />
+        <KpiCard icon={AlertIcon} label="Pending Review" value={dashboardData.pending_review} sub="need attention" color="bg-amber-50 text-amber-600" />
+        <KpiCard icon={ChatIcon} label="Replied" value={dashboardData.replied} sub="conversations" color="bg-purple-50 text-purple-600" />
+        <KpiCard icon={CheckIcon} label="Won" value={dashboardData.won} sub="new clients" color="bg-green-50 text-green-600" />
       </div>
 
       {/* Full-funnel visualization */}
