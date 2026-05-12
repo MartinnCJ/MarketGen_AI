@@ -1,0 +1,146 @@
+"""Pydantic schemas for Book Concepts and Chapters."""
+from __future__ import annotations
+
+from datetime import datetime
+from enum import Enum
+from typing import List, Optional
+
+from pydantic import BaseModel, Field
+
+
+class BookStatus(str, Enum):
+    draft     = "draft"
+    outlined  = "outlined"
+    generated = "generated"
+    published = "published"
+
+
+class ChapterStatus(str, Enum):
+    pending   = "pending"
+    generated = "generated"
+    edited    = "edited"
+    draft     = "draft"
+
+
+class ContentType(str, Enum):
+    full  = "full"
+    long  = "long"
+    short = "short"
+
+
+class WritingStyle(str, Enum):
+    professional   = "professional"
+    conversational = "conversational"
+    academic       = "academic"
+    creative       = "creative"
+    technical      = "technical"
+    persuasive     = "persuasive"
+
+
+# ── Chapter ───────────────────────────────────────────────────────────────────
+class ChapterBase(BaseModel):
+    title: str       = Field(..., max_length=255)
+    description: Optional[str] = None
+
+
+class ChapterCreate(ChapterBase):
+    pass
+
+
+class ChapterUpdate(BaseModel):
+    title:       Optional[str] = Field(None, max_length=255)
+    description: Optional[str] = None
+
+
+class ChapterOut(ChapterBase):
+    id:               str
+    book_id:          str = Field(alias="bookId")
+    order_index:      int = Field(alias="orderIndex")
+    status:           ChapterStatus
+    word_count:       int = Field(0, alias="wordCount")
+    content_available: bool = Field(False, alias="contentAvailable")
+    created_at:       datetime = Field(alias="createdAt")
+    updated_at:       datetime = Field(alias="updatedAt")
+
+    class Config:
+        populate_by_name = True
+
+
+class ChapterReorder(BaseModel):
+    chapter_ids: List[str] = Field(..., alias="chapterIds", min_length=1)
+
+    class Config:
+        populate_by_name = True
+
+
+class ChapterContentSave(BaseModel):
+    content: str   = Field(..., max_length=100_000)
+    format:  str   = Field("html", pattern="^(html|markdown)$")
+
+
+# ── Book ──────────────────────────────────────────────────────────────────────
+class BookCreate(BaseModel):
+    title:       str            = Field(..., max_length=255)
+    description: str            = Field(..., min_length=10)
+    keywords:    List[str]      = Field(default_factory=list)
+
+
+class BookUpdate(BaseModel):
+    title:       Optional[str]       = Field(None, max_length=255)
+    description: Optional[str]       = None
+    keywords:    Optional[List[str]] = None
+
+
+class BookOut(BaseModel):
+    id:          str
+    title:       str
+    description: str
+    keywords:    List[str]
+    status:      BookStatus
+    user_id:     str      = Field(alias="userId")
+    chapters:    List[ChapterOut] = []
+    created_at:  datetime = Field(alias="createdAt")
+    updated_at:  datetime = Field(alias="updatedAt")
+
+    class Config:
+        populate_by_name = True
+
+
+class BookListItem(BaseModel):
+    id:            str
+    title:         str
+    status:        BookStatus
+    chapter_count: int      = Field(0, alias="chapterCount")
+    created_at:    datetime = Field(alias="createdAt")
+    updated_at:    datetime = Field(alias="updatedAt")
+
+    class Config:
+        populate_by_name = True
+
+
+class BookListResponse(BaseModel):
+    data:  List[BookListItem]
+    total: int
+    page:  int
+    limit: int
+
+
+# ── Generation params ─────────────────────────────────────────────────────────
+class GenerateChaptersRequest(BaseModel):
+    chapter_count: int = Field(5, ge=1, le=15, alias="chapterCount")
+
+    class Config:
+        populate_by_name = True
+
+
+class GenerateContentRequest(BaseModel):
+    content_type: ContentType  = Field(ContentType.long,         alias="contentType")
+    style:        WritingStyle = Field(WritingStyle.professional, alias="style")
+    language:     str          = Field("en", max_length=5)
+
+    class Config:
+        populate_by_name = True
+
+
+class RefineContentRequest(BaseModel):
+    instruction: str = Field(..., max_length=500)
