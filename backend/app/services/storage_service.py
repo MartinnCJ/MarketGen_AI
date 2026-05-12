@@ -14,8 +14,6 @@ Bucket structure:
 from __future__ import annotations
 
 import mimetypes
-import os
-from pathlib import Path
 from typing import Optional
 
 from supabase import create_client, Client

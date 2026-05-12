@@ -2,7 +2,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 
 from app.dependencies.auth import CurrentUser, get_current_user
-from app.schemas.job import JobOut
 from app.services.firestore_service import jobs_repo
 
 router = APIRouter(prefix="/jobs", tags=["Jobs"])

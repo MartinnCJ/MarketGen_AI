@@ -25,8 +25,8 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 
 from app.dependencies.auth import CurrentUser, get_current_user
 from app.schemas.book import (
-    BookCreate, BookListResponse, BookOut, BookUpdate,
-    ChapterContentSave, ChapterCreate, ChapterOut, ChapterReorder, ChapterUpdate,
+    BookCreate, BookListResponse, BookUpdate,
+    ChapterContentSave, ChapterCreate, ChapterReorder, ChapterUpdate,
     GenerateChaptersRequest, GenerateContentRequest, RefineContentRequest,
 )
 from app.schemas.job import JobAccepted
