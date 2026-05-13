@@ -31,9 +31,11 @@ from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 
 from app.dependencies.auth import CurrentUser, get_current_user
+# app/routers/books.py
+
 from app.schemas.book import (
-    BookCreate, BookListResponse, BookOut, BookUpdate,
-    ChapterContentSave, ChapterCreate, ChapterOut, ChapterReorder, ChapterUpdate,
+    BookCreate, BookListResponse, BookUpdate,  # Quité BookOut
+    ChapterContentSave, ChapterCreate, ChapterReorder, ChapterUpdate,  # Quité ChapterOut
     GenerateChaptersRequest, GenerateContentRequest, RefineContentRequest,
 )
 from app.schemas.job import JobAccepted
