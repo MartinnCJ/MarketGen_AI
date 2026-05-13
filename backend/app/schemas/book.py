@@ -1,4 +1,7 @@
-"""Pydantic schemas for Book Concepts and Chapters."""
+"""
+Pydantic schemas — Book Concepts y Chapters.
+Usado por: backend/app/routers/books.py
+"""
 from __future__ import annotations
 
 from datetime import datetime
@@ -7,6 +10,8 @@ from typing import List, Optional
 
 from pydantic import BaseModel, Field
 
+
+# ── Enums ──────────────────────────────────────────────────────────────────────
 
 class BookStatus(str, Enum):
     draft     = "draft"
@@ -37,9 +42,10 @@ class WritingStyle(str, Enum):
     persuasive     = "persuasive"
 
 
-# ── Chapter ───────────────────────────────────────────────────────────────────
+# ── Chapter schemas ────────────────────────────────────────────────────────────
+
 class ChapterBase(BaseModel):
-    title: str       = Field(..., max_length=255)
+    title:       str            = Field(..., max_length=255)
     description: Optional[str] = None
 
 
@@ -54,41 +60,51 @@ class ChapterUpdate(BaseModel):
 
 class ChapterOut(ChapterBase):
     id:               str
-    book_id:          str = Field(alias="bookId")
-    order_index:      int = Field(alias="orderIndex")
+    book_id:          str  = Field(alias="bookId")
+    order_index:      int  = Field(alias="orderIndex")
     status:           ChapterStatus
-    word_count:       int = Field(0, alias="wordCount")
+    word_count:       int  = Field(0, alias="wordCount")
     content_available: bool = Field(False, alias="contentAvailable")
     created_at:       datetime = Field(alias="createdAt")
     updated_at:       datetime = Field(alias="updatedAt")
 
-    class Config:
-        populate_by_name = True
+    model_config = {"populate_by_name": True}
 
 
 class ChapterReorder(BaseModel):
     chapter_ids: List[str] = Field(..., alias="chapterIds", min_length=1)
 
-    class Config:
-        populate_by_name = True
+    model_config = {"populate_by_name": True}
 
 
 class ChapterContentSave(BaseModel):
-    content: str   = Field(..., max_length=100_000)
-    format:  str   = Field("html", pattern="^(html|markdown)$")
+    content: str = Field(..., max_length=100_000)
+    format:  str = Field("html", pattern="^(html|markdown)$")
 
 
-# ── Book ──────────────────────────────────────────────────────────────────────
+# ── Book schemas ───────────────────────────────────────────────────────────────
+
 class BookCreate(BaseModel):
-    title:       str            = Field(..., max_length=255)
-    description: str            = Field(..., min_length=10)
-    keywords:    List[str]      = Field(default_factory=list)
+    title:       str       = Field(..., max_length=255)
+    description: str       = Field(..., min_length=10)
+    keywords:    List[str] = Field(default_factory=list)
+
+    model_config = {
+        "json_schema_extra": {
+            "example": {
+                "title":       "AI in Modern Marketing",
+                "description": "Guía completa sobre cómo los equipos de marketing pueden usar IA.",
+                "keywords":    ["AI", "marketing", "automatización"],
+            }
+        }
+    }
 
 
 class BookUpdate(BaseModel):
     title:       Optional[str]       = Field(None, max_length=255)
     description: Optional[str]       = None
     keywords:    Optional[List[str]] = None
+    status:      Optional[BookStatus] = None
 
 
 class BookOut(BaseModel):
@@ -97,13 +113,12 @@ class BookOut(BaseModel):
     description: str
     keywords:    List[str]
     status:      BookStatus
-    user_id:     str      = Field(alias="userId")
+    user_id:     str           = Field(alias="userId")
     chapters:    List[ChapterOut] = []
-    created_at:  datetime = Field(alias="createdAt")
-    updated_at:  datetime = Field(alias="updatedAt")
+    created_at:  datetime      = Field(alias="createdAt")
+    updated_at:  datetime      = Field(alias="updatedAt")
 
-    class Config:
-        populate_by_name = True
+    model_config = {"populate_by_name": True}
 
 
 class BookListItem(BaseModel):
@@ -114,8 +129,7 @@ class BookListItem(BaseModel):
     created_at:    datetime = Field(alias="createdAt")
     updated_at:    datetime = Field(alias="updatedAt")
 
-    class Config:
-        populate_by_name = True
+    model_config = {"populate_by_name": True}
 
 
 class BookListResponse(BaseModel):
@@ -125,12 +139,12 @@ class BookListResponse(BaseModel):
     limit: int
 
 
-# ── Generation params ─────────────────────────────────────────────────────────
+# ── Generation request schemas ─────────────────────────────────────────────────
+
 class GenerateChaptersRequest(BaseModel):
     chapter_count: int = Field(5, ge=1, le=15, alias="chapterCount")
 
-    class Config:
-        populate_by_name = True
+    model_config = {"populate_by_name": True}
 
 
 class GenerateContentRequest(BaseModel):
@@ -138,8 +152,7 @@ class GenerateContentRequest(BaseModel):
     style:        WritingStyle = Field(WritingStyle.professional, alias="style")
     language:     str          = Field("en", max_length=5)
 
-    class Config:
-        populate_by_name = True
+    model_config = {"populate_by_name": True}
 
 
 class RefineContentRequest(BaseModel):
