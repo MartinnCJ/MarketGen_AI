@@ -18,7 +18,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import settings
 from app.routers import (
-    health, auth
+    health, auth, books_mock, reports_mock
 )
 
 # ── App instance ──────────────────────────────────────────────────────────────
@@ -46,6 +46,10 @@ app.include_router(auth.router)
 
 # Health (no prefix — used by Cloud Run health checks)
 app.include_router(health.router)
+
+app.include_router(reports_mock.router)
+
+app.include_router(books_mock.router)
 
 # Core feature routers
 # app.include_router(books.router,             prefix=API_PREFIX)
