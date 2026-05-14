@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { getDashboardData } from "./api/dashboardApi";
-
+import { getCustomers } from "./api/customersApi";
 /* ═══════════════════════════════════════════════════════════════ */
 /*  INLINE SVG ICONS                                               */
 /* ═══════════════════════════════════════════════════════════════ */
@@ -159,12 +159,20 @@ function DashboardPage() {
     won: 0,
      });
 
+       const [customers, setCustomers] = useState([]);
+
   useEffect(() => {
   getDashboardData().then((data) => {
     console.log("Datos recibidos:", data);
     setDashboardData(data);
     });
-        }, []);
+
+  getCustomers().then((data) => {
+    console.log("Customers:", data);
+    setCustomers(data);
+    });
+
+    }, []);
 
   return (
     
@@ -182,6 +190,13 @@ function DashboardPage() {
 
       {/* Full-funnel KPI row */}
       <div className="grid grid-cols-6 gap-3">
+        <KpiCard
+         icon={UsersIcon}
+         label="Customers"
+         value={customers.length}
+         sub="connected"
+         color="bg-teal-50 text-teal-600"
+        />
         <KpiCard icon={SearchIcon} label="Detected" value={dashboardData.detected} sub="this week" color="bg-blue-50 text-blue-600" />
         <KpiCard icon={UsersIcon} label="Researched" value={dashboardData.researched} sub="contacts" color="bg-cyan-50 text-cyan-600" />            
         <KpiCard icon={MailIcon} label="Contacted" value={dashboardData.contacted} sub="emails" color="bg-indigo-50 text-indigo-600" />
