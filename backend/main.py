@@ -1,8 +1,23 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-app = FastAPI(title="MarketGen AI API")
+# Routers
+from app.routers import (
+    reports_mock,
+    books_mock,
+    customers_mock,
+    templates_mock,
+    proposals_mock,
+)
 
+# ── App ─────────────────────────────────────────────
+app = FastAPI(
+    title="MarketGen AI API",
+    version="1.0.0",
+    description="Backend API for MarketGen AI",
+)
+
+# ── CORS ────────────────────────────────────────────
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -11,17 +26,14 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# ── Root ────────────────────────────────────────────
 @app.get("/")
 def home():
     return {"message": "Backend MarketGen AI funcionando"}
 
-@app.get("/api/dashboard")
-def dashboard():
-    return {
-        "detected": 999,
-        "researched": 214,
-        "contacted": 156,
-        "pending_review": 12,
-        "replied": 18,
-        "won": 7
-    }
+# ── Routers ─────────────────────────────────────────
+app.include_router(reports_mock.router)
+app.include_router(books_mock.router)
+app.include_router(customers_mock.router)
+app.include_router(templates_mock.router)
+app.include_router(proposals_mock.router)
