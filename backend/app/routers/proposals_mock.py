@@ -5,9 +5,6 @@ from app.models.proposal import Proposal
 import re
 from pathlib import Path
 from fastapi.responses import FileResponse
-from bs4 import BeautifulSoup
-from reportlab.pdfgen import canvas
-from docx import Document
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib.pagesizes import LETTER
