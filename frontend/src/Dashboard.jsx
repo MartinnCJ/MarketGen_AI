@@ -5,6 +5,7 @@ import {
   createProposal,
   deleteProposal,
   updateProposal,
+  generateProposalDraft,
 } from "./api/proposalsApi";
 /* ═══════════════════════════════════════════════════════════════ */
 /*  INLINE SVG ICONS                                               */
@@ -396,6 +397,7 @@ function ContentLibraryPage() {
   const [typeFilter, setTypeFilter] = useState("All");
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [editingProposal, setEditingProposal] = useState(null);
+  const [viewingProposal, setViewingProposal] = useState(null);
   const [contentTitle, setContentTitle] = useState("");
   const [contentDescription, setContentDescription] = useState("");
   
@@ -498,7 +500,12 @@ const filtered =
                 <Badge label={item.status} color={statusColor(item.status)} />
               </div>
               <p className="text-sm font-medium text-gray-900 mb-1">{item.title}</p>
-              <p className="text-xs text-gray-400 mb-2">{item.industry} · Updated {item.date}</p>
+              <div
+                className="text-xs text-gray-400 mb-2 line-clamp-3"
+                dangerouslySetInnerHTML={{
+              __html: `${item.industry || ""} · Updated ${item.date}`,
+              }}
+              />
               <div className="flex flex-wrap gap-1 mb-3">
                 {item.services.map(s => <span key={s} className="px-1.5 py-0.5 bg-indigo-50 text-indigo-600 rounded text-xs">{s}</span>)}
               </div>
@@ -509,7 +516,10 @@ const filtered =
                 
                 <div className="flex gap-0.5 opacity-0 group-hover:opacity-100">
 
-                  <button className="p-1 rounded hover:bg-gray-100">
+                  <button
+                    onClick={() => setViewingProposal(item)}
+                    className="p-1 rounded hover:bg-gray-100"
+                  >
                     <EyeIcon size={11} className="text-gray-400" />
                   </button>
 
@@ -621,14 +631,15 @@ const filtered =
         )}
         
         {(createType === "Case Study" ||
-  createType === "Whitepaper" ||
-  createType === "Proposal") && (
-  <Field label="Content source">
-    <div className="space-y-2">
-      <label className="flex items-center gap-2 p-2.5 rounded-xl border border-gray-100 bg-gray-50 cursor-pointer hover:border-indigo-200 transition-colors">
-        <input type="radio" name="source" defaultChecked className="accent-indigo-600" />
+          createType === "Whitepaper" ||
+          createType === "Proposal" ||
+          createType === "Template") && (
+        <Field label="Content source">
+          <div className="space-y-2">
+          <label className="flex items-center gap-2 p-2.5 rounded-xl border border-gray-100 bg-gray-50 cursor-pointer hover:border-indigo-200 transition-colors">
+          <input type="radio" name="source" defaultChecked className="accent-indigo-600" />
         <SparkIcon size={14} className="text-indigo-500" />
-        <div>
+          <div>
           <p className="text-xs font-medium text-gray-800">Generate with AI</p>
           <p className="text-xs text-gray-400">AI creates the content based on title and tags</p>
         </div>
@@ -666,24 +677,34 @@ const filtered =
           <Btn variant="secondary" icon={<SaveIcon size={12} />}>
             Save as Draft
           </Btn>
+        <Btn
+          icon={<SparkIcon size={13} />}
+          onClick={async () => {
+        try {
+        // 1. Crear proposal
+         const newProposal = await createProposal({
+            title: contentTitle,
+            description: contentDescription,
+            status: "draft",
+          });
 
-          <Btn
-            icon={<SparkIcon size={13} />}
-            onClick={async () => {
-              await createProposal({
-                title: contentTitle,
-                description: contentDescription,
-                status: "draft",
-              });
+          // 2. Generar draft con IA
+            await generateProposalDraft(newProposal.id);
 
-              const updatedProposals = await getProposals();
-              setProposals(updatedProposals);
+          // 3. Refrescar proposals
+            const updatedProposals = await getProposals();
+            setProposals(updatedProposals);
 
-              setContentTitle("");
-              setContentDescription("");
-              setShowCreateModal(false);
+          // 4. Limpiar modal
+            setContentTitle("");
+            setContentDescription("");
+            setShowCreateModal(false);
 
-              alert("Proposal creada correctamente");
+            alert("Proposal generada con IA correctamente");
+          } catch (error) {
+            console.error(error);
+            alert("Error generating proposal");
+          }
             }}
           >
             Create & Generate
@@ -694,6 +715,59 @@ const filtered =
   </div>
 )}
 
+{/* ── View Proposal Modal ── */}
+{viewingProposal && (
+  <div className="fixed inset-0 z-50 flex items-center justify-center">
+    <div
+      className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+      onClick={() => setViewingProposal(null)}
+    />
+
+    <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-3xl mx-4 max-h-[90vh] overflow-y-auto">
+      <div className="flex items-center justify-between p-5 border-b border-gray-100">
+        <div>
+          <h2 className="text-lg font-semibold text-gray-900">
+            {viewingProposal.title}
+          </h2>
+          <p className="text-xs text-gray-400">
+            Proposal Preview
+          </p>
+        </div>
+
+        <button
+          onClick={() => setViewingProposal(null)}
+          className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors"
+        >
+          <XIcon size={16} className="text-gray-400" />
+        </button>
+      </div>
+
+      <div
+        className="p-6 prose prose-sm max-w-none text-gray-700"
+        dangerouslySetInnerHTML={{
+          __html: viewingProposal.industry || "",
+        }}
+      />
+
+      <div className="flex justify-end gap-2 p-5 border-t border-gray-100 bg-gray-50 rounded-b-2xl">
+        <Btn variant="secondary" onClick={() => setViewingProposal(null)}>
+          Close
+        </Btn>
+
+        <Btn
+          onClick={() => {
+            window.open(
+              `http://127.0.0.1:8000/proposals/${viewingProposal.id}/download?format=pdf`,
+              "_blank"
+            );
+          }}
+        >
+          Download PDF
+        </Btn>
+      </div>
+    </div>
+  </div>
+)}
 {/* ── Edit Proposal Modal ── */}
 {editingProposal && (
   <div className="fixed inset-0 z-50 flex items-center justify-center">
@@ -719,18 +793,12 @@ const filtered =
           placeholder="Proposal title"
         />
 
-        <textarea
-          className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
-          value={editingProposal.industry || ""}
-          onChange={(e) =>
-            setEditingProposal({
-              ...editingProposal,
-              industry: e.target.value,
-            })
-          }
-          placeholder="Description"
-        />
-
+        <div
+          className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm max-h-80 overflow-y-auto"
+          dangerouslySetInnerHTML={{
+          __html: editingProposal.industry || "",
+        }}
+      />
         <div className="flex justify-end gap-2 pt-3">
           <Btn variant="ghost" onClick={() => setEditingProposal(null)}>
             Cancel

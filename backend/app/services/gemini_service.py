@@ -22,7 +22,13 @@ import google.generativeai as genai
 from app.config import settings
 
 # ── Configure Gemini client once ──────────────────────────────────────────────
-genai.configure(api_key=settings.gemini_api_key)
+import os
+
+api_key = settings.gemini_api_key or os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
+
+print("GEMINI KEY LOADED:", bool(api_key))
+
+genai.configure(api_key=api_key)
 
 # ── Writing style prompts ─────────────────────────────────────────────────────
 STYLE_PROMPTS = {
