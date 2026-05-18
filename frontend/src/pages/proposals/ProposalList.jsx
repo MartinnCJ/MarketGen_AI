@@ -1,7 +1,8 @@
 /**
  * ProposalList — list, create, download, and delete commercial proposals.
  */
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { getProposals } from "../../api/proposalsApi";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { format } from "date-fns";
@@ -83,7 +84,21 @@ export default function ProposalList() {
   const [showNew, setShowNew] = useState(false);
   const [deleting, setDeleting] = useState(null);
   const [downloading, setDownloading] = useState(null);
+  const [backendProposals, setBackendProposals] = useState([]);
 
+  useEffect(() => {
+  const loadProposals = async () => {
+    try {
+      const data = await getProposals();
+      console.log("Proposals:", data);
+      setBackendProposals(data);
+    } catch (error) {
+      console.error(error);
+      }
+    };
+
+  loadProposals();
+  }, []);
   const { data: proposals = [], isLoading } = useQuery({
     queryKey: ["proposals", search],
     queryFn: () => proposalsApi.list({ search, limit: 50 }).then((r) => r.data?.items ?? []),
@@ -115,9 +130,13 @@ export default function ProposalList() {
   return (
     <div className="p-6 max-w-6xl mx-auto">
       {/* Header */}
+
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Propuestas</h1>
+          <p className="text-sm text-slate-500">
+            Proposals conectadas desde backend: {backendProposals.length}
+          </p>
           <p className="text-sm text-gray-500 mt-0.5">Crea y gestiona propuestas comerciales con IA</p>
         </div>
         <Button variant="primary" icon={<Plus size={16} />} onClick={() => setShowNew(true)}>
