@@ -256,8 +256,12 @@ async def forgot_password(body: ForgotPasswordRequest) -> MessageResponse:
     para prevenir enumeración de usuarios (anti-enumeration).
 
     Keycloak maneja internamente el envío del email y la gestión del token.
-    """
     
+    url = (
+        f"{settings.keycloak_url}/realms/{settings.keycloak_realm}"
+        "/protocol/openid-connect/reset-password-email"
+    )
+    """
     # Keycloak Admin API requiere un service account para esto.
     # Alternativa más simple: ejecutar la acción UPDATE_PASSWORD via Admin REST API.
     # Por ahora usamos el flujo estándar de Keycloak via Admin Client.

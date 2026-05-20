@@ -1,33 +1,22 @@
-"""
-NoonDalton AI Marketing Suite — FastAPI application entry point.
-"""
-# app.include_router(books.router,             prefix=API_PREFIX)
-# app.include_router(jobs.router,              prefix=API_PREFIX)
-# app.include_router(proposals.router,         prefix=API_PREFIX)
-# app.include_router(customers.router,         prefix=API_PREFIX)
-# app.include_router(settings_router.router,   prefix=API_PREFIX)
-# app.include_router(chat.router,              prefix=API_PREFIX)
-# app.include_router(reports.router,           prefix=API_PREFIX)
-# app.include_router(assets.router,            prefix=API_PREFIX)
-# app.include_router(templates.router,         prefix=API_PREFIX)
-# app.include_router(analysis.router,          prefix=API_PREFIX)
-# app.include_router(publishing.router,        prefix=API_PREFIX)
-
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-
 from app.config import settings
 from app.routers import (
     health,
     auth,
-    books_mock,
-    reports_mock,
-    customers_mock,
-    templates_mock,
-    proposals_mock,
+    books,
+    jobs,
+    proposals,
+    customers,
+    settings as settings_router,
+    chat,
+    reports,
+    assets,
+    templates,
+    analysis,
+    publishing,
 )
 
-# ── App instance ──────────────────────────────────────────────────────────────
 app = FastAPI(
     title=settings.app_name,
     version="1.0.0",
@@ -36,7 +25,6 @@ app = FastAPI(
     redoc_url="/redoc" if settings.app_debug else None,
 )
 
-# ── CORS ──────────────────────────────────────────────────────────────────────
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.cors_origins,
@@ -45,33 +33,18 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# ── Routers ───────────────────────────────────────────────────────────────────
 API_PREFIX = "/api/v1"
 
 app.include_router(auth.router)
-
-# Health (no prefix — used by Cloud Run health checks)
 app.include_router(health.router)
-
-app.include_router(reports_mock.router)
-
-app.include_router(books_mock.router)
-
-app.include_router(customers_mock.router)
-
-app.include_router(templates_mock.router)
-
-app.include_router(proposals_mock.router)
-
-# Core feature routers
-# app.include_router(books.router,             prefix=API_PREFIX)
-# app.include_router(jobs.router,              prefix=API_PREFIX)
-# app.include_router(proposals.router,         prefix=API_PREFIX)
-# app.include_router(customers.router,         prefix=API_PREFIX)
-# app.include_router(settings_router.router,   prefix=API_PREFIX)
-# app.include_router(chat.router,              prefix=API_PREFIX)
-# app.include_router(reports.router,           prefix=API_PREFIX)
-# app.include_router(assets.router,            prefix=API_PREFIX)
-# app.include_router(templates.router,         prefix=API_PREFIX)
-# app.include_router(analysis.router,          prefix=API_PREFIX)
-# app.include_router(publishing.router,        prefix=API_PREFIX)
+app.include_router(books.router,           prefix=API_PREFIX)
+app.include_router(jobs.router,            prefix=API_PREFIX)
+app.include_router(proposals.router,       prefix=API_PREFIX)
+app.include_router(customers.router,       prefix=API_PREFIX)
+app.include_router(settings_router.router, prefix=API_PREFIX)
+app.include_router(chat.router,            prefix=API_PREFIX)
+app.include_router(reports.router,         prefix=API_PREFIX)
+app.include_router(assets.router,          prefix=API_PREFIX)
+app.include_router(templates.router,       prefix=API_PREFIX)
+app.include_router(analysis.router,        prefix=API_PREFIX)
+app.include_router(publishing.router,      prefix=API_PREFIX)
