@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { getDashboardData } from "./api/dashboardApi";
 import {
   getProposals,
@@ -9,6 +9,9 @@ import {
   downloadProposalPdf,
   downloadProposalDocx,
 } from "./api/proposalsApi";
+
+import Chat from "./pages/chat/Chat";
+
 import ReactMarkdown from "react-markdown";
 /* ═══════════════════════════════════════════════════════════════ */
 /*  INLINE SVG ICONS                                               */
@@ -173,8 +176,6 @@ function DashboardPage() {
     console.log("Datos recibidos:", data);
     setDashboardData(data);
     });
-
-
 
     }, []);
 
@@ -403,7 +404,14 @@ function ContentLibraryPage() {
   const [viewingProposal, setViewingProposal] = useState(null);
   const [contentTitle, setContentTitle] = useState("");
   const [contentDescription, setContentDescription] = useState("");
-  
+  const cleanProposalHtml = (html = "") => {
+  return html
+    .replace(/```html/g, "")
+    .replace(/```/g, "")
+    .replace(/<br\s*\/?>/gi, "<br />")
+    .trim();
+  };
+
   useEffect(() => {
     const loadProposals = async () => {
       try {
@@ -503,14 +511,18 @@ const filtered =
                 <Badge label={item.status} color={statusColor(item.status)} />
               </div>
               <p className="text-sm font-medium text-gray-900 mb-1">{item.title}</p>
-              <div
-                className="text-xs text-gray-400 mb-2 line-clamp-3"
-                dangerouslySetInnerHTML={{
-              __html: `${item.industry || ""} · Updated ${item.date}`,
-              }}
-              />
+              <p className="text-xs text-gray-400 mb-2 line-clamp-3">
+                 {(item.industry || "").replace(/<[^>]*>/g, "").slice(0, 90)} · Updated {item.date}
+              </p>
               <div className="flex flex-wrap gap-1 mb-3">
-                {item.services.map(s => <span key={s} className="px-1.5 py-0.5 bg-indigo-50 text-indigo-600 rounded text-xs">{s}</span>)}
+                {item.services.map((s) => (
+                  <span
+                    key={s}
+                    className="px-1.5 py-0.5 bg-indigo-50 text-indigo-600 rounded text-xs"
+                  >
+                    {s}
+                  </span>
+                ))}
               </div>
               <div className="flex items-center justify-between pt-2 border-t border-gray-50">
                 <span className="text-xs text-gray-400 flex items-center gap-1">
@@ -745,36 +757,49 @@ const filtered =
         </button>
       </div>
 
-      <div
-        className="p-6 prose prose-sm max-w-none text-gray-700"
-        dangerouslySetInnerHTML={{
-          __html: viewingProposal.industry || "",
-        }}
-      />
-
+      <div className="p-6 prose prose-sm max-w-none text-gray-700">
+        <div
+          className="prose prose-slate max-w-none
+          prose-h1:text-2xl prose-h1:font-bold
+          prose-h2:text-xl prose-h2:font-semibold
+          prose-h3:text-lg prose-h3:font-semibold
+          prose-strong:font-bold prose-strong:text-gray-900
+          prose-table:w-full prose-table:border-collapse prose-table:my-4
+          prose-th:border prose-th:border-gray-300 prose-th:bg-gray-100 prose-th:px-3 prose-th:py-2 prose-th:text-left
+          prose-td:border prose-td:border-gray-300 prose-td:px-3 prose-td:py-2
+          prose-p:leading-relaxed prose-li:my-1"
+          dangerouslySetInnerHTML={{
+         __html: /<\/?[a-z][\s\S]*>/i.test(viewingProposal.industry || "")
+          ? cleanProposalHtml(viewingProposal.industry)
+          : cleanProposalHtml(viewingProposal.industry || "").replace(/\n/g, "<br />"),
+       }}
+    />
+      </div>
       <div className="flex justify-end gap-2 p-5 border-t border-gray-100 bg-gray-50 rounded-b-2xl">
         <Btn variant="secondary" onClick={() => setViewingProposal(null)}>
           Close
+      </Btn>
+      <Btn
+     variant="secondary"
+          onClick={() => {
+             window.open(
+              `http://127.0.0.1:8000/proposals/${viewingProposal.id}/download?format=docx`,
+              "_blank"
+            );
+           }}
+        >
+           Download DOCX
         </Btn>
       <Btn
-            onClick={() => {
-            window.open(
-            `http://127.0.0.1:8000/api/v1/proposals/${viewingProposal.id}/download?format=pdf`,
+        onClick={() => {
+           window.open(
+            `http://127.0.0.1:8000/proposals/${viewingProposal.id}/download?format=pdf`,
             "_blank"
           );
         }}
-      >
+       >
           Download PDF
-      </Btn>
-    <Btn
-        onClick={() => {
-        window.open(
-        `http://127.0.0.1:8000/api/v1/proposals/${viewingProposal.id}/download?format=docx`,"_blank"  
-            );
-          }}
-        >
-        Download Word
-        </Btn>
+       </Btn>
       </div>
     </div>
   </div>
@@ -803,12 +828,16 @@ const filtered =
           }
           placeholder="Proposal title"
         />
-
-        <div
-          className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm max-h-80 overflow-y-auto"
-          dangerouslySetInnerHTML={{
-          __html: editingProposal.industry || "",
-        }}
+        <textarea
+          className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm text-left max-h-80 min-h-64 overflow-y-auto"
+          value={(editingProposal.industry || "").replace(/<[^>]*>/g, "")}
+          onChange={(e) =>
+            setEditingProposal({
+            ...editingProposal,
+            industry: e.target.value,
+          })
+        }
+        placeholder="Edit proposal content"
       />
         <div className="flex justify-end gap-2 pt-3">
           <Btn variant="ghost" onClick={() => setEditingProposal(null)}>
@@ -990,12 +1019,57 @@ function OutreachPage() {
 /*  PAGE: AI ASSISTANT (contextual)                                */
 /* ═══════════════════════════════════════════════════════════════ */
 function AssistantPage() {
+  const [assistantMessages, setAssistantMessages] = useState([]);
+  const [assistantInput, setAssistantInput] = useState("");
+  const [assistantLoading, setAssistantLoading] = useState(false);
+
+  const assistantEndRef = useRef(null); useEffect(() => {
+  assistantEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [assistantMessages, assistantLoading]);
+
   const suggestions = [
     { icon: TargetIcon, text: "Find more companies like FinServe Global", color: "text-indigo-600 bg-indigo-50" },
     { icon: FileIcon, text: "Draft a proposal for MedTech's support needs", color: "text-teal-600 bg-teal-50" },
     { icon: MailIcon, text: "Write a follow-up for the LogiCorp deal", color: "text-purple-600 bg-purple-50" },
     { icon: BookIcon, text: "Create a whitepaper on healthcare outsourcing", color: "text-amber-600 bg-amber-50" },
   ];
+
+  const sendAssistantMessage = async () => {
+    const message = assistantInput.trim();
+    if (!message) return;
+
+    setAssistantInput("");
+    setAssistantMessages((prev) => [
+      ...prev,
+      { role: "user", content: message },
+    ]);
+
+    setAssistantLoading(true);
+
+    try {
+      const response = await fetch("http://127.0.0.1:8000/assistant/chat", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ message }),
+      });
+
+      const data = await response.json();
+
+      setAssistantMessages((prev) => [
+        ...prev,
+        { role: "assistant", content: data.reply || "Sin respuesta" },
+      ]);
+    } catch (error) {
+      setAssistantMessages((prev) => [
+        ...prev,
+        { role: "assistant", content: "Error al conectar con Gemini." },
+      ]);
+    } finally {
+      setAssistantLoading(false);
+    }
+  };
 
   return (
     <div className="flex flex-col h-full">
@@ -1008,47 +1082,123 @@ function AssistantPage() {
       </div>
 
       <div className="flex-1 p-4 space-y-4 overflow-y-auto">
-        {/* Context-aware suggestions */}
         <div className="bg-gray-50 rounded-xl p-3">
-          <p className="text-xs font-medium text-gray-500 mb-2">Suggested actions based on your pipeline</p>
+          <p className="text-xs font-medium text-gray-500 mb-2">
+            Suggested actions based on your pipeline
+          </p>
+
           <div className="grid grid-cols-2 gap-2">
             {suggestions.map((s, i) => (
-              <button key={i} className="flex items-center gap-2 p-2.5 bg-white rounded-lg border border-gray-100 hover:border-indigo-200 transition-colors text-left">
-                <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${s.color}`}><s.icon size={12} /></div>
+              <button
+                key={i}
+                onClick={() => {
+                  setAssistantInput(s.text);
+                  setTimeout(() => {
+                  sendAssistantMessage();
+                }, 100);
+              }}
+                className="flex items-center gap-2 p-2.5 bg-white rounded-lg border border-gray-100 hover:border-indigo-200 transition-colors text-left"
+              >
+                <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${s.color}`}>
+                  <s.icon size={12} />
+                </div>
                 <span className="text-xs text-gray-700">{s.text}</span>
               </button>
             ))}
           </div>
         </div>
 
-        {/* Chat messages */}
         <div className="flex gap-2 max-w-[80%]">
-          <div className="w-7 h-7 rounded-full bg-indigo-100 flex items-center justify-center shrink-0"><BotIcon size={13} className="text-indigo-600" /></div>
+          <div className="w-7 h-7 rounded-full bg-indigo-100 flex items-center justify-center shrink-0">
+            <BotIcon size={13} className="text-indigo-600" />
+          </div>
           <div className="bg-white border border-gray-200 rounded-2xl rounded-tl-sm p-3 text-xs text-gray-700">
-            Hi! I have context on your pipeline and content library. I can help you draft proposals using your existing case studies, write targeted outreach, or find new opportunities. What would you like to do?
+            Hi! I have context on your pipeline and content library. Ask me anything about proposals, outreach, content strategy, or marketing ideas.
           </div>
         </div>
-        <div className="flex gap-2 justify-end">
-          <div className="bg-indigo-600 text-white rounded-2xl rounded-tr-sm p-3 text-xs max-w-[75%]">
-            Draft a proposal for MedTech Inc. They need customer support — use data from the Support Excellence whitepaper.
-          </div>
-        </div>
-        <div className="flex gap-2 max-w-[80%]">
-          <div className="w-7 h-7 rounded-full bg-indigo-100 flex items-center justify-center shrink-0"><BotIcon size={13} className="text-indigo-600" /></div>
-          <div className="bg-white border border-gray-200 rounded-2xl rounded-tl-sm p-3 text-xs text-gray-700">
-            <p className="mb-2">I'll draft that proposal using your "Customer Support Excellence" whitepaper as a foundation. Here's what I'm pulling in:</p>
-            <div className="bg-indigo-50 rounded-lg p-2 mb-2 flex items-center gap-2">
-              <LinkIcon size={10} className="text-indigo-500" />
-              <span className="text-xs text-indigo-700">Referencing: Customer Support Excellence whitepaper</span>
+
+        {assistantMessages.map((msg, index) => (
+          <div
+            key={index}
+            className={`flex gap-2 ${
+              msg.role === "user" ? "justify-end" : "max-w-[80%]"
+            }`}
+          >
+            
+
+            <div
+              className={`rounded-2xl p-3 text-xs leading-relaxed ${
+                msg.role === "user"
+                  ? "bg-indigo-600 text-white rounded-tr-sm max-w-[75%]"
+                  : "bg-white border border-gray-200 text-gray-700 rounded-tl-sm"
+              }`}
+            >
+              <ReactMarkdown>
+                {msg.content}
+              </ReactMarkdown>
+
+          {msg.role === "assistant" && (
+          <div className="mt-3 pt-3 border-t border-gray-100">
+            <Btn
+              small
+              variant="secondary"
+              icon={<SaveIcon size={12} />}
+              onClick={async () => {
+        try {
+              await createProposal({
+              title: "AI Generated Proposal",
+              description: msg.content,
+              status: "draft",
+            });
+
+              alert("Proposal guardada correctamente");
+            } catch (error) {
+              console.error(error);
+              alert("Error guardando proposal");
+            }
+              }}
+            >
+               Save Proposal
+             </Btn>
             </div>
-            <p>Creating a personalized proposal for MedTech Inc's Customer Support Lead position, incorporating your healthcare BPO expertise and support frameworks...</p>
+            )}
+            </div>
           </div>
-        </div>
+        ))}
+
+        {assistantLoading && (
+          <div className="flex gap-2 max-w-[80%]">
+            <div className="w-7 h-7 rounded-full bg-indigo-100 flex items-center justify-center shrink-0">
+              <BotIcon size={13} className="text-indigo-600" />
+            </div>
+            <div className="bg-white border border-gray-200 rounded-2xl rounded-tl-sm p-3 text-xs text-gray-400">
+              Gemini está pensando...
+            </div>
+          </div>
+        )}
+        <div ref={assistantEndRef} />
       </div>
 
       <div className="p-4 border-t border-gray-100 flex gap-2">
-        <input className="flex-1 border border-gray-300 rounded-xl px-4 py-2 text-xs" placeholder="Ask about your pipeline, draft content, find opportunities..." />
-        <Btn icon={<SendIcon size={14} />}>Send</Btn>
+        <input
+          value={assistantInput}
+          onChange={(e) => setAssistantInput(e.target.value)}
+          onKeyDown={(e) => { if (e.key === "Enter" && assistantInput.trim()) {
+              e.preventDefault();
+              sendAssistantMessage();
+            }
+          }}
+          className="flex-1 border border-gray-300 rounded-xl px-4 py-2 text-xs"
+          placeholder="Ask about your pipeline, draft content, find opportunities..."
+        />
+
+        <Btn
+          icon={<SendIcon size={14} />}
+          disabled={assistantLoading || !assistantInput.trim()}
+          onClick={sendAssistantMessage}
+        >
+          Send
+        </Btn>
       </div>
     </div>
   );
@@ -1394,7 +1544,7 @@ const PAGES = {
   opportunities: { label: "Opportunities",  icon: TargetIcon,  component: OpportunitiesPage },
   content:    { label: "Content Library",   icon: FolderIcon,  component: ContentLibraryPage },
   outreach:   { label: "Outreach",          icon: SendIcon,    component: OutreachPage, badge: 3 },
-  assistant:  { label: "AI Assistant",      icon: SparkIcon,   component: AssistantPage },
+  assistant: { label: "AI Assistant", icon: SparkIcon, component: AssistantPage },
   reports:    { label: "Reports",           icon: ChartIcon,   component: ReportsPage },
   settings:   { label: "Settings",          icon: GearIcon,    component: SettingsPage },
 };

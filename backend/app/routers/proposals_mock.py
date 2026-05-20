@@ -3,7 +3,9 @@ from sqlalchemy.orm import Session
 from app.dependencies.db import get_db
 from app.models.proposal import Proposal
 import re
+from sqlalchemy import text
 from pathlib import Path
+from docx import Document
 from fastapi.responses import FileResponse
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
 from reportlab.lib.styles import getSampleStyleSheet
@@ -25,6 +27,18 @@ def serialize_proposal(proposal: Proposal):
         "status": getattr(proposal, "estado", "draft"),
         "totalAmount": getattr(proposal, "monto_total", 0),
     }
+
+def clean_markdown_text(text: str) -> str:
+    text = text or ""
+
+    text = re.sub(r"^#{1,6}\s*", "", text, flags=re.MULTILINE)
+    text = re.sub(r"\*\*(.*?)\*\*", r"\1", text)
+    text = re.sub(r"\*(.*?)\*", r"\1", text)
+    text = re.sub(r"^\s*[-*]\s+", "• ", text, flags=re.MULTILINE)
+    text = re.sub(r"^\s*\d+\.\s+", "• ", text, flags=re.MULTILINE)
+    text = text.replace("---", "")
+
+    return text.strip()
 
 
 @router.get("")
@@ -86,17 +100,37 @@ def delete_proposal(proposal_id: int, db: Session = Depends(get_db)):
     if not item:
         return {"error": "Proposal no encontrada"}
 
+    db.execute(
+    text("DELETE FROM detalle_propuesta WHERE id_propuesta = :proposal_id"),
+    {"proposal_id": proposal_id}
+)
     db.delete(item)
     db.commit()
 
     return {"message": f"Proposal {proposal_id} eliminada"}
 
 @router.post("/{proposal_id}/upload-to-crm")
-def upload_proposal_to_crm(proposal_id: int):
+def upload_proposal_to_crm(
+    proposal_id: int,
+    db: Session = Depends(get_db)
+):
+    proposal = db.query(Proposal).filter(
+        Proposal.id_propuesta == proposal_id
+    ).first()
+
+    if not proposal:
+        return {"error": "Proposal no encontrada"}
+
+    proposal.estado = "uploaded_to_crm"
+
+    db.commit()
+    db.refresh(proposal)
+
     return {
-        "crmRecordId": f"crm-{proposal_id}",
-        "crmUrl": "https://crm.example.com/proposals/demo",
-        "status": "uploaded",
+        "crmRecordId": f"crm-proposal-{proposal.id_propuesta}",
+        "crmUrl": f"https://crm.noondalton.local/proposals/{proposal.id_propuesta}",
+        "status": "uploaded_to_crm",
+        "proposal": serialize_proposal(proposal),
     }
 
 # =========================
@@ -175,9 +209,40 @@ def download_proposal(
     output_dir.mkdir(exist_ok=True)
 
     title = proposal.titulo or "Proposal"
-    content = proposal.contenido or "Sin contenido"
+    content = clean_markdown_text(proposal.contenido or "Sin contenido")
 
     clean_content = re.sub(r"<[^>]+>", "", content)
+
+    if format == "docx":
+        file_path = output_dir / f"proposal_{proposal_id}.docx"
+
+        doc = Document()
+        doc.add_heading(title, 0)
+
+        for line in clean_content.split("\n"):
+            line = line.strip()
+
+            if not line:
+                continue
+
+            if line.lower() in [
+                "resumen ejecutivo",
+                "alcance",
+                "beneficios",
+                "servicios propuestos",
+                "próximos pasos",
+            ]:
+                doc.add_heading(line, level=1)
+            else:
+                doc.add_paragraph(line)
+
+        doc.save(file_path)
+
+        return FileResponse(
+            path=file_path,
+            filename=f"proposal_{proposal_id}.docx",
+            media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        )
 
     file_path = output_dir / f"proposal_{proposal_id}.pdf"
 

@@ -11,7 +11,9 @@ export const getProposals = async () => {
 export const createProposal = async (proposal) => {
   const response = await fetch(PROPOSALS_URL, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+    },
     body: JSON.stringify(proposal),
   });
 
@@ -21,7 +23,9 @@ export const createProposal = async (proposal) => {
 export const updateProposal = async (id, proposal) => {
   const response = await fetch(`${PROPOSALS_URL}/${id}`, {
     method: "PUT",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+    },
     body: JSON.stringify(proposal),
   });
 

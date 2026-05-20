@@ -18,7 +18,7 @@ Flujo de autenticación:
   Frontend → POST /auth/login → este router → Keycloak token endpoint
            ← { accessToken, refreshToken, expiresIn, user }
   Frontend → GET /api/v1/books (Authorization: Bearer <token>)
-           → dependencies/auth.py verify_token() → valida contra Keycloak JWKS 
+           → dependencies/auth.py verify_token() → valida contra Keycloak JWKS
 """
 
 import httpx

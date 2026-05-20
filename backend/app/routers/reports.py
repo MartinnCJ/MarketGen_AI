@@ -50,6 +50,10 @@ async def reports_overview(user: CurrentUser = Depends(get_current_user)):
         "generatedAt":   datetime.now(timezone.utc).isoformat(),
     }
 
+@router.get("/dashboard")
+async def reports_dashboard(user: CurrentUser = Depends(get_current_user)):
+    """Alias for dashboard KPI endpoint expected by Swagger/frontend."""
+    return await reports_overview(user)
 
 @router.get("/books")
 async def reports_books(
@@ -64,6 +68,61 @@ async def reports_books(
     )
     return {"items": books, "total": len(books)}
 
+@router.get("/proposals")
+async def reports_proposals(
+    limit: int = Query(10, ge=1, le=100),
+    user: CurrentUser = Depends(get_current_user),
+):
+    proposals = await proposals_repo.list(
+        filters=[("userId", "==", user.sub)],
+        order_by="createdAt",
+        order_direction="DESCENDING",
+        limit=500,
+    )
+
+    status_map = {}
+
+    for proposal in proposals:
+        status = proposal.get("status", "draft")
+        amount = proposal.get("totalAmount") or proposal.get("total") or 0
+
+        if status not in status_map:
+            status_map[status] = {"label": status, "count": 0, "totalValue": 0}
+
+        status_map[status]["count"] += 1
+        status_map[status]["totalValue"] += float(amount or 0)
+
+    return {
+        "dimension": "status",
+        "data": list(status_map.values())[:limit],
+        "timeSeries": [],
+    }
+
+@router.get("/content")
+async def reports_content(
+    limit: int = Query(50, ge=1, le=200),
+    user: CurrentUser = Depends(get_current_user),
+):
+    books = await books_repo.list(
+        filters=[("userId", "==", user.sub)],
+        order_by="updatedAt",
+        order_direction="DESCENDING",
+        limit=limit,
+    )
+
+    return {
+        "data": [
+            {
+                "bookId": book.get("id"),
+                "bookTitle": book.get("title", ""),
+                "status": book.get("status", "draft"),
+                "assetCount": book.get("assetCount", 0),
+                "downloadCount": book.get("downloadCount", 0),
+                "createdAt": str(book.get("createdAt", "")),
+            }
+            for book in books
+        ]
+    }
 
 @router.get("/export")
 async def export_report(
