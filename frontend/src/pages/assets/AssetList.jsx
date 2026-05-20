@@ -7,7 +7,14 @@
  *   - Download ready assets
  *   - Delete assets
  */
-import { useState } from "react";
+import {
+  getProposals,
+  createProposal,
+  updateProposal,
+  deleteProposal,
+} from "@/api/proposalsApi";
+import { getTemplates } from "@/api/templatesApi";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
@@ -17,7 +24,7 @@ import {
   Layers, Search, ChevronDown, Loader2, Plus,
 } from "lucide-react";
 
-import { assetsApi, booksApi } from "@/api/axios";
+import { assetsApi, booksApi, proposalsApi } from "@/api/axios";
 import { useJobPolling } from "@/hooks/useJobPolling";
 import Button from "@/components/ui/Button";
 import Badge from "@/components/ui/Badge";
@@ -26,6 +33,11 @@ import Modal from "@/components/ui/Modal";
 
 // ── Asset type config ─────────────────────────────────────────────────────────
 const ASSET_TYPES = {
+  proposal: {
+  label: "Proposal",
+  icon: FileText,
+  color: "text-teal-500 bg-teal-50",
+},
   one_pager:   { label: "One-Pager",      icon: FileText, color: "text-indigo-500 bg-indigo-50" },
   whitepaper:  { label: "White Paper",    icon: Layers,   color: "text-teal-500 bg-teal-50" },
   social_post: { label: "Social Posts",   icon: Share2,   color: "text-pink-500 bg-pink-50" },
@@ -72,6 +84,13 @@ function GenerateModal({ open, onClose, onGenerated }) {
         case "whitepaper":  res = await assetsApi.generateWhitepaper(selectedBook, body); break;
         case "social_post": res = await assetsApi.generateSocialPosts(selectedBook, body); break;
         case "infographic": res = await assetsApi.generateInfographic(selectedBook, body); break;
+        case "proposal":
+        res = await createProposal({
+        title: "Nueva Proposal",
+        description: "Creada desde Content Library",
+        status: "draft",
+            });
+        break;
         default: return;
       }
       setJobId(res.data.job_id);
@@ -256,6 +275,9 @@ export default function AssetList() {
   const [showGenerate, setShowGenerate] = useState(false);
   const [deleting, setDeleting] = useState(null);
   const [previewing, setPreviewing] = useState(null);
+  const [contentTitle, setContentTitle] = useState("");
+  const [contentDescription, setContentDescription] = useState("");
+  const [templates, setTemplates] = useState([]);
 
   const { data, isLoading } = useQuery({
     queryKey: ["assets", typeFilter],
@@ -263,7 +285,47 @@ export default function AssetList() {
     refetchInterval: 5000, // auto-refresh to pick up status changes
   });
 
+  const { data: proposalsData } = useQuery({
+  queryKey: ["content-library-proposals"],
+  queryFn: () => proposalsApi.list().then((r) => r.data),
+  });
+
+  useEffect(() => {
+  const loadTemplates = async () => {
+    try {
+      const data = await getTemplates();
+      setTemplates(data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  loadTemplates();
+  }, []);
+
   const assets = data?.items ?? [];
+
+  const proposals = proposalsData ?? [];
+
+  const handleDeleteProposal = async (id) => {
+  await deleteProposal(id);
+  qc.invalidateQueries({ queryKey: ["content-library-proposals"] });
+};
+
+const handleEditProposal = async (proposal) => {
+  const newTitle = prompt("Nuevo título:", proposal.title);
+  const newDescription = prompt("Nueva descripción:", proposal.description || "");
+
+  if (!newTitle) return;
+
+  await updateProposal(proposal.id, {
+    title: newTitle,
+    description: newDescription,
+    status: proposal.status || "draft",
+  });
+
+  qc.invalidateQueries({ queryKey: ["content-library-proposals"] });
+};
 
   const deleteMut = useMutation({
     mutationFn: (id) => assetsApi.delete(id),
@@ -319,6 +381,79 @@ export default function AssetList() {
               onPreview={setPreviewing}
             />
           ))}
+          {proposals.map((proposal) => (
+  <div
+    key={proposal.id}
+    className="bg-white rounded-2xl border border-gray-100 shadow-card p-5"
+  >
+    <div className="flex items-center justify-between mb-3">
+      <span className="text-xs font-semibold px-2 py-1 rounded-full bg-teal-50 text-teal-600">
+        Proposal
+      </span>
+
+      <span className="text-xs text-slate-400">
+        {proposal.status || "draft"}
+      </span>
+    </div>
+
+    <h3 className="text-lg font-semibold text-slate-900">
+      {proposal.title}
+    </h3>
+
+    <p className="text-sm text-slate-500 mt-2">
+      {proposal.description || "Sin descripción"}
+    </p>
+
+      <div className="flex justify-end mt-4">
+        <button
+          onClick={() => handleDeleteProposal(proposal.id)}
+          className="text-xs px-3 py-1 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 transition-colors"
+        >
+          Eliminar
+        </button>
+      </div>
+      
+    <div className="flex gap-2 mt-4">
+  <button
+    onClick={() => handleEditProposal(proposal)}
+    className="text-xs px-2 py-1 rounded bg-slate-100 text-slate-600 hover:bg-slate-200"
+  >
+    Editar
+  </button>
+
+  <button
+    onClick={() => handleDeleteProposal(proposal.id)}
+    className="text-xs px-2 py-1 rounded bg-red-50 text-red-600 hover:bg-red-100"
+  >
+    Eliminar
+  </button>
+    </div>
+  </div>
+  ))}
+    {templates.map((template) => (
+  <div
+    key={template.id}
+    className="bg-white rounded-2xl border border-gray-100 shadow-card p-5"
+    >
+    <div className="flex items-center justify-between mb-3">
+      <span className="text-xs font-semibold px-2 py-1 rounded-full bg-amber-50 text-amber-600">
+        Template
+      </span>
+
+      <span className="text-xs text-slate-400">
+        active
+        </span>
+      </div>
+
+     <h3 className="text-lg font-semibold text-slate-900">
+      {template.title}
+      </h3>
+
+        <p className="text-sm text-slate-500 mt-2">
+        {template.description || "Sin descripción"}
+       </p>
+      </div>
+      ))}
         </div>
       )}
 

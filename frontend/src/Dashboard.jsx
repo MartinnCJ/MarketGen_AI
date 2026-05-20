@@ -1,6 +1,12 @@
 import { useEffect, useState } from "react";
 import { getDashboardData } from "./api/dashboardApi";
-import { getCustomers } from "./api/customersApi";
+import {
+  getProposals,
+  createProposal,
+  deleteProposal,
+  updateProposal,
+  generateProposalDraft,
+} from "./api/proposalsApi";
 /* ═══════════════════════════════════════════════════════════════ */
 /*  INLINE SVG ICONS                                               */
 /* ═══════════════════════════════════════════════════════════════ */
@@ -159,18 +165,13 @@ function DashboardPage() {
     won: 0,
      });
 
-       const [customers, setCustomers] = useState([]);
-
   useEffect(() => {
   getDashboardData().then((data) => {
     console.log("Datos recibidos:", data);
     setDashboardData(data);
     });
 
-  getCustomers().then((data) => {
-    console.log("Customers:", data);
-    setCustomers(data);
-    });
+
 
     }, []);
 
@@ -190,13 +191,7 @@ function DashboardPage() {
 
       {/* Full-funnel KPI row */}
       <div className="grid grid-cols-6 gap-3">
-        <KpiCard
-         icon={UsersIcon}
-         label="Customers"
-         value={customers.length}
-         sub="connected"
-         color="bg-teal-50 text-teal-600"
-        />
+        
         <KpiCard icon={SearchIcon} label="Detected" value={dashboardData.detected} sub="this week" color="bg-blue-50 text-blue-600" />
         <KpiCard icon={UsersIcon} label="Researched" value={dashboardData.researched} sub="contacts" color="bg-cyan-50 text-cyan-600" />            
         <KpiCard icon={MailIcon} label="Contacted" value={dashboardData.contacted} sub="emails" color="bg-indigo-50 text-indigo-600" />
@@ -398,8 +393,34 @@ function OpportunitiesPage() {
 /*  PAGE: CONTENT LIBRARY (merged Assets, Proposals, Templates)    */
 /* ═══════════════════════════════════════════════════════════════ */
 function ContentLibraryPage() {
+  const [proposals, setProposals] = useState([]);
   const [typeFilter, setTypeFilter] = useState("All");
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [editingProposal, setEditingProposal] = useState(null);
+  const [viewingProposal, setViewingProposal] = useState(null);
+  const [contentTitle, setContentTitle] = useState("");
+  const [contentDescription, setContentDescription] = useState("");
+  
+  useEffect(() => {
+    const loadProposals = async () => {
+      try {
+        const data = await getProposals();
+        setProposals(data);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    loadProposals();
+  }, []);
+
+  const handleDeleteProposal = async (id) => {
+  await deleteProposal(id);
+
+  const updatedProposals = await getProposals();
+  setProposals(updatedProposals);
+  };
+
   const [createType, setCreateType] = useState("Case Study");
   const types = ["All", "Case Study", "Proposal", "Template", "Whitepaper", "Social Post"];
 
@@ -414,7 +435,23 @@ function ContentLibraryPage() {
     { title: "Data Entry Services", type: "Proposal", industry: "Retail", services: ["data entry","accounting"], status: "Accepted", uses: 18, date: "Apr 5" },
   ];
 
-  const filtered = typeFilter === "All" ? items : items.filter(i => i.type === typeFilter);
+  const realProposalItems = proposals.map((proposal) => ({
+  id: proposal.id,
+  title: proposal.title,
+  type: "Proposal",
+  status: proposal.status || "Draft",
+  industry: proposal.description || "Created from backend",
+  services: ["backend"],
+  uses: 0,
+  date: "Today",
+}));
+
+const allItems = [...items, ...realProposalItems];
+
+const filtered =
+  typeFilter === "All"
+    ? allItems
+    : allItems.filter((item) => item.type === typeFilter);
 
   const typeIcon = (t) => {
     const m = { "Case Study": BookIcon, "Proposal": BriefIcon, "Template": FileIcon, "Whitepaper": LayersIcon, "Social Post": Share2Icon };
@@ -463,7 +500,12 @@ function ContentLibraryPage() {
                 <Badge label={item.status} color={statusColor(item.status)} />
               </div>
               <p className="text-sm font-medium text-gray-900 mb-1">{item.title}</p>
-              <p className="text-xs text-gray-400 mb-2">{item.industry} · Updated {item.date}</p>
+              <div
+                className="text-xs text-gray-400 mb-2 line-clamp-3"
+                dangerouslySetInnerHTML={{
+              __html: `${item.industry || ""} · Updated ${item.date}`,
+              }}
+              />
               <div className="flex flex-wrap gap-1 mb-3">
                 {item.services.map(s => <span key={s} className="px-1.5 py-0.5 bg-indigo-50 text-indigo-600 rounded text-xs">{s}</span>)}
               </div>
@@ -471,9 +513,32 @@ function ContentLibraryPage() {
                 <span className="text-xs text-gray-400 flex items-center gap-1">
                   {item.uses > 0 ? <><LinkIcon size={10} /> Used in {item.uses} emails</> : "Not yet used"}
                 </span>
+                
                 <div className="flex gap-0.5 opacity-0 group-hover:opacity-100">
-                  <button className="p-1 rounded hover:bg-gray-100"><EyeIcon size={11} className="text-gray-400" /></button>
-                  <button className="p-1 rounded hover:bg-gray-100"><PenIcon size={11} className="text-gray-400" /></button>
+
+                  <button
+                    onClick={() => setViewingProposal(item)}
+                    className="p-1 rounded hover:bg-gray-100"
+                  >
+                    <EyeIcon size={11} className="text-gray-400" />
+                  </button>
+
+                  <button
+                    onClick={() => setEditingProposal(item)}
+                    className="p-1 rounded hover:bg-gray-100"
+                  >
+                    <PenIcon size={11} className="text-gray-400" />
+                  </button>
+
+                  {item.type === "Proposal" && (
+                    <button
+                      onClick={() => handleDeleteProposal(item.id)}
+                      className="p-1 rounded hover:bg-red-100"
+                    >
+                      <TrashIcon size={11} className="text-red-500" />
+                    </button>
+                  )}
+
                 </div>
               </div>
             </Card>
@@ -482,159 +547,285 @@ function ContentLibraryPage() {
       </div>
 
       {/* ── Create Content Modal ── */}
-      {showCreateModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
-          <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setShowCreateModal(false)} />
-          <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto">
-            {/* Header */}
-            <div className="flex items-center justify-between p-5 border-b border-gray-100">
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center"><PlusIcon size={16} className="text-indigo-600" /></div>
-                <div>
-                  <h2 className="text-sm font-semibold text-gray-900">Create Content</h2>
-                  <p className="text-xs text-gray-400">Add a new item to your Content Library</p>
-                </div>
-              </div>
-              <button onClick={() => setShowCreateModal(false)} className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors"><XIcon size={16} className="text-gray-400" /></button>
-            </div>
+{showCreateModal && (
+  <div className="fixed inset-0 z-50 flex items-center justify-center">
+    <div
+      className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+      onClick={() => setShowCreateModal(false)}
+    />
 
-            {/* Body */}
-            <div className="p-5 space-y-4">
-              {/* Content type selector */}
-              <Field label="Content type">
-                <div className="grid grid-cols-5 gap-1.5">
-                  {["Case Study","Proposal","Template","Whitepaper","Social Post"].map(t => {
-                    const Ic = typeIcon(t);
-                    const active = createType === t;
-                    return (
-                      <button key={t} onClick={() => setCreateType(t)}
-                        className={`flex flex-col items-center gap-1.5 p-2.5 rounded-xl border text-center transition-colors ${
-                          active ? "border-indigo-300 bg-indigo-50 text-indigo-700" : "border-gray-100 bg-gray-50 text-gray-500 hover:border-gray-200"
-                        }`}>
-                        <Ic size={16} />
-                        <span className="text-xs font-medium leading-tight">{t}</span>
-                      </button>
-                    );
-                  })}
-                </div>
-              </Field>
+    <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto">
+      {/* Header */}
+      <div className="flex items-center justify-between p-5 border-b border-gray-100">
+        <div className="flex items-center gap-2">
+          <div className="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center">
+            <PlusIcon size={16} className="text-indigo-600" />
+          </div>
 
-              <Field label="Title">
-                <Input placeholder={`e.g. "${createType === "Template" ? "Follow-up after demo" : createType === "Proposal" ? "BPO Proposal for [Client]" : "Outsourcing in Healthcare"}"`} />
-              </Field>
-
-              {createType !== "Social Post" && (
-                <Field label="Description" hint="Brief summary — the AI will use this when referencing your content in outreach emails.">
-                  <textarea className="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none h-20" placeholder="What is this content about? What value does it demonstrate?" />
-                </Field>
-              )}
-
-              <div className="grid grid-cols-2 gap-3">
-                <Field label="Industry">
-                  <Select>
-                    <option>General</option>
-                    <option>Finance</option>
-                    <option>Healthcare</option>
-                    <option>Retail</option>
-                    <option>Technology</option>
-                    <option>Logistics</option>
-                  </Select>
-                </Field>
-                <Field label="Status">
-                  <Select>
-                    <option>Draft</option>
-                    <option>Published</option>
-                    <option>Active</option>
-                  </Select>
-                </Field>
-              </div>
-
-              <Field label="Service tags" hint="Tag with service lines so agents can match this content to relevant opportunities.">
-                <TagInput tags={[]} placeholder="e.g. data entry, customer support, accounting..." />
-              </Field>
-
-              {(createType === "Template") && (
-                <Field label="Template variables" hint="Use {curly braces} for merge fields the email composer will fill in.">
-                  <TagInput tags={["{client}","{service}","{industry}"]} placeholder="Add variable..." />
-                </Field>
-              )}
-
-              {(createType === "Template") && (
-                <Field label="Template body">
-                  <textarea className="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none h-28 font-mono" placeholder={"Dear {client},\n\nI noticed your team is looking for {service} expertise. At NoonDalton, we specialize in...\n\nBest regards"} />
-                </Field>
-              )}
-
-              {(createType === "Case Study" || createType === "Whitepaper" || createType === "Proposal") && (
-                <Field label="Content source">
-                  <div className="space-y-2">
-                    <label className="flex items-center gap-2 p-2.5 rounded-xl border border-gray-100 bg-gray-50 cursor-pointer hover:border-indigo-200 transition-colors">
-                      <input type="radio" name="source" defaultChecked className="accent-indigo-600" />
-                      <SparkIcon size={14} className="text-indigo-500" />
-                      <div>
-                        <p className="text-xs font-medium text-gray-800">Generate with AI</p>
-                        <p className="text-xs text-gray-400">AI creates the content based on title and tags</p>
-                      </div>
-                    </label>
-                    <label className="flex items-center gap-2 p-2.5 rounded-xl border border-gray-100 bg-gray-50 cursor-pointer hover:border-indigo-200 transition-colors">
-                      <input type="radio" name="source" className="accent-indigo-600" />
-                      <DownloadIcon size={14} className="text-gray-400" />
-                      <div>
-                        <p className="text-xs font-medium text-gray-800">Upload existing file</p>
-                        <p className="text-xs text-gray-400">PDF, DOCX, or plain text</p>
-                      </div>
-                    </label>
-                    <label className="flex items-center gap-2 p-2.5 rounded-xl border border-gray-100 bg-gray-50 cursor-pointer hover:border-indigo-200 transition-colors">
-                      <input type="radio" name="source" className="accent-indigo-600" />
-                      <PenIcon size={14} className="text-gray-400" />
-                      <div>
-                        <p className="text-xs font-medium text-gray-800">Write manually</p>
-                        <p className="text-xs text-gray-400">Enter content directly in the editor</p>
-                      </div>
-                    </label>
-                  </div>
-                </Field>
-              )}
-
-              {createType === "Social Post" && (
-                <>
-                  <Field label="Platform">
-                    <Select>
-                      <option>LinkedIn</option>
-                      <option>Twitter / X</option>
-                      <option>Instagram</option>
-                    </Select>
-                  </Field>
-                  <Field label="Post content">
-                    <textarea className="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none h-24" placeholder="Write your post or let AI generate it..." />
-                  </Field>
-                </>
-              )}
-
-              {/* Info box */}
-              <div className="p-3 rounded-xl bg-indigo-50 border border-indigo-100">
-                <div className="flex items-start gap-2">
-                  <ZapIcon size={14} className="text-indigo-500 mt-0.5 shrink-0" />
-                  <div className="text-xs text-indigo-700">
-                    <p className="font-medium mb-0.5">How this connects to your pipeline</p>
-                    <p>Once created, the email composer will automatically match this content to relevant opportunities based on industry and service tags. You'll see usage stats on each content card.</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Footer */}
-            <div className="flex items-center justify-between p-5 border-t border-gray-100 bg-gray-50 rounded-b-2xl">
-              <Btn variant="ghost" onClick={() => setShowCreateModal(false)}>Cancel</Btn>
-              <div className="flex gap-2">
-                <Btn variant="secondary" icon={<SaveIcon size={12} />}>Save as Draft</Btn>
-                <Btn icon={<SparkIcon size={13} />}>Create & Generate</Btn>
-              </div>
-            </div>
+          <div>
+            <h2 className="text-sm font-semibold text-gray-900">Create Content</h2>
+            <p className="text-xs text-gray-400">Add a new item to your Content Library</p>
           </div>
         </div>
-      )}
+
+        <button
+          onClick={() => setShowCreateModal(false)}
+          className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors"
+        >
+          <XIcon size={16} className="text-gray-400" />
+        </button>
+      </div>
+
+      {/* Body */}
+      <div className="p-5 space-y-4">
+        <Field label="Content type">
+          <div className="grid grid-cols-5 gap-1.5">
+            {["Case Study", "Proposal", "Template", "Whitepaper", "Social Post"].map((t) => {
+              const Ic = typeIcon(t);
+              const active = createType === t;
+
+              return (
+                <button
+                  key={t}
+                  onClick={() => setCreateType(t)}
+                  className={`flex flex-col items-center gap-1.5 p-2.5 rounded-xl border text-center transition-colors ${
+                    active
+                      ? "border-indigo-300 bg-indigo-50 text-indigo-700"
+                      : "border-gray-100 bg-gray-50 text-gray-500 hover:border-gray-200"
+                  }`}
+                >
+                  <Ic size={16} />
+                  <span className="text-xs font-medium leading-tight">{t}</span>
+                </button>
+              );
+            })}
+          </div>
+        </Field>
+
+        <Field label="Title">
+          <Input
+            placeholder={`e.g. "${
+              createType === "Template"
+                ? "Follow-up after demo"
+                : createType === "Proposal"
+                ? "BPO Proposal for [Client]"
+                : "Outsourcing in Healthcare"
+            }"`}
+            value={contentTitle}
+            onChange={(e) => setContentTitle(e.target.value)}
+          />
+        </Field>
+
+        {createType !== "Social Post" && (
+          <Field
+            label="Description"
+            hint="Brief summary — the AI will use this when referencing your content in outreach emails."
+          >
+            <textarea
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none h-20"
+              placeholder="What is this content about? What value does it demonstrate?"
+              value={contentDescription}
+              onChange={(e) => setContentDescription(e.target.value)}
+            />
+          </Field>
+        )}
+        
+        {(createType === "Case Study" ||
+          createType === "Whitepaper" ||
+          createType === "Proposal" ||
+          createType === "Template") && (
+        <Field label="Content source">
+          <div className="space-y-2">
+          <label className="flex items-center gap-2 p-2.5 rounded-xl border border-gray-100 bg-gray-50 cursor-pointer hover:border-indigo-200 transition-colors">
+          <input type="radio" name="source" defaultChecked className="accent-indigo-600" />
+        <SparkIcon size={14} className="text-indigo-500" />
+          <div>
+          <p className="text-xs font-medium text-gray-800">Generate with AI</p>
+          <p className="text-xs text-gray-400">AI creates the content based on title and tags</p>
+        </div>
+      </label>
+
+      <label className="flex items-center gap-2 p-2.5 rounded-xl border border-gray-100 bg-gray-50 cursor-pointer hover:border-indigo-200 transition-colors">
+        <input type="radio" name="source" className="accent-indigo-600" />
+        <DownloadIcon size={14} className="text-gray-400" />
+        <div>
+          <p className="text-xs font-medium text-gray-800">Upload existing file</p>
+          <p className="text-xs text-gray-400">PDF, DOCX, or plain text</p>
+        </div>
+      </label>
+
+      <label className="flex items-center gap-2 p-2.5 rounded-xl border border-gray-100 bg-gray-50 cursor-pointer hover:border-indigo-200 transition-colors">
+        <input type="radio" name="source" className="accent-indigo-600" />
+        <PenIcon size={14} className="text-gray-400" />
+        <div>
+          <p className="text-xs font-medium text-gray-800">Write manually</p>
+          <p className="text-xs text-gray-400">Enter content directly in the editor</p>
+        </div>
+      </label>
     </div>
+  </Field>
+)}
+      </div>
+
+      {/* Footer */}
+      <div className="flex items-center justify-between p-5 border-t border-gray-100 bg-gray-50 rounded-b-2xl">
+        <Btn variant="ghost" onClick={() => setShowCreateModal(false)}>
+          Cancel
+        </Btn>
+
+        <div className="flex gap-2">
+          <Btn variant="secondary" icon={<SaveIcon size={12} />}>
+            Save as Draft
+          </Btn>
+        <Btn
+          icon={<SparkIcon size={13} />}
+          onClick={async () => {
+        try {
+        // 1. Crear proposal
+         const newProposal = await createProposal({
+            title: contentTitle,
+            description: contentDescription,
+            status: "draft",
+          });
+
+          // 2. Generar draft con IA
+            await generateProposalDraft(newProposal.id);
+
+          // 3. Refrescar proposals
+            const updatedProposals = await getProposals();
+            setProposals(updatedProposals);
+
+          // 4. Limpiar modal
+            setContentTitle("");
+            setContentDescription("");
+            setShowCreateModal(false);
+
+            alert("Proposal generada con IA correctamente");
+          } catch (error) {
+            console.error(error);
+            alert("Error generating proposal");
+          }
+            }}
+          >
+            Create & Generate
+          </Btn>
+        </div>
+      </div>
+    </div>
+  </div>
+)}
+
+{/* ── View Proposal Modal ── */}
+{viewingProposal && (
+  <div className="fixed inset-0 z-50 flex items-center justify-center">
+    <div
+      className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+      onClick={() => setViewingProposal(null)}
+    />
+
+    <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-3xl mx-4 max-h-[90vh] overflow-y-auto">
+      <div className="flex items-center justify-between p-5 border-b border-gray-100">
+        <div>
+          <h2 className="text-lg font-semibold text-gray-900">
+            {viewingProposal.title}
+          </h2>
+          <p className="text-xs text-gray-400">
+            Proposal Preview
+          </p>
+        </div>
+
+        <button
+          onClick={() => setViewingProposal(null)}
+          className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors"
+        >
+          <XIcon size={16} className="text-gray-400" />
+        </button>
+      </div>
+
+      <div
+        className="p-6 prose prose-sm max-w-none text-gray-700"
+        dangerouslySetInnerHTML={{
+          __html: viewingProposal.industry || "",
+        }}
+      />
+
+      <div className="flex justify-end gap-2 p-5 border-t border-gray-100 bg-gray-50 rounded-b-2xl">
+        <Btn variant="secondary" onClick={() => setViewingProposal(null)}>
+          Close
+        </Btn>
+
+        <Btn
+          onClick={() => {
+            window.open(
+              `http://127.0.0.1:8000/proposals/${viewingProposal.id}/download?format=pdf`,
+              "_blank"
+            );
+          }}
+        >
+          Download PDF
+        </Btn>
+      </div>
+    </div>
+  </div>
+)}
+{/* ── Edit Proposal Modal ── */}
+{editingProposal && (
+  <div className="fixed inset-0 z-50 flex items-center justify-center">
+    <div
+      className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+      onClick={() => setEditingProposal(null)}
+    />
+
+    <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4 p-5">
+      <h2 className="text-lg font-semibold text-gray-900 mb-4">
+        Edit Proposal
+      </h2>
+
+      <div className="space-y-3">
+        <Input
+          value={editingProposal.title}
+          onChange={(e) =>
+            setEditingProposal({
+              ...editingProposal,
+              title: e.target.value,
+            })
+          }
+          placeholder="Proposal title"
+        />
+
+        <div
+          className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm max-h-80 overflow-y-auto"
+          dangerouslySetInnerHTML={{
+          __html: editingProposal.industry || "",
+        }}
+      />
+        <div className="flex justify-end gap-2 pt-3">
+          <Btn variant="ghost" onClick={() => setEditingProposal(null)}>
+            Cancel
+          </Btn>
+
+          <Btn
+            onClick={async () => {
+              await updateProposal(editingProposal.id, {
+                title: editingProposal.title,
+                description: editingProposal.industry,
+                status: editingProposal.status,
+              });
+
+              const updated = await getProposals();
+              setProposals(updated);
+
+              setEditingProposal(null);
+            }}
+          >
+            Save Changes
+          </Btn>
+        </div>
+      </div>
+    </div>
+  </div>
+)}
+  </div>
   );
 }
 
