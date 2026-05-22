@@ -13,7 +13,7 @@ import { Spinner } from "@/components/ui/Spinner";
 const GEMINI_MODELS = [
   { value: "gemini-2.0-flash",        label: "Gemini 2.0 Flash (rápido, bajo coste)" },
   { value: "gemini-2.0-flash-thinking", label: "Gemini 2.0 Flash Thinking (razonamiento avanzado)" },
-  { value: "gemini-1.5-pro",          label: "Gemini 1.5 Pro (contexto largo)" },
+  { value: "gemini-2.0-flash",          label: "Gemini 2.0 Flash (contexto largo)" },
 ];
 
 const SECTION = ({ title, icon: Icon, children }) => (

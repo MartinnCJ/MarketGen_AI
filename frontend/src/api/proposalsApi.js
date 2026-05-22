@@ -1,4 +1,4 @@
-const API_URL = "http://127.0.0.1:8000/proposals";
+const API_URL = "https://marketgen-ai.onrender.com/proposals";
 
 export const getProposals = async () => {
   const response = await fetch(API_URL);
@@ -39,7 +39,7 @@ export const deleteProposal = async (id) => {
 
 export const generateProposalDraft = async (proposalId) => {
   const response = await fetch(
-    `http://127.0.0.1:8000/proposals/${proposalId}/generate-draft`,
+    `https://marketgen-ai.onrender.com/proposals/${proposalId}/generate-draft`,
     {
       method: "POST",
     }

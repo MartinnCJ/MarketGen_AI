@@ -144,7 +144,7 @@ docker compose up --build
 ```
 
 Services started:
-- **API**: http://localhost:8000 (FastAPI + Swagger at /docs)
+- **API**: https://marketgen-ai.onrender.com (FastAPI + Swagger at /docs)
 - **Frontend**: http://localhost:5173 (Vite dev server)
 - **Keycloak**: http://localhost:8080 (admin/admin)
 - **Flower** (Celery monitor): http://localhost:5555

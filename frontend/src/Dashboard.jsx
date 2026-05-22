@@ -757,7 +757,7 @@ const filtered =
         <Btn
           onClick={() => {
             window.open(
-              `http://127.0.0.1:8000/proposals/${viewingProposal.id}/download?format=pdf`,
+              `https://marketgen-ai.onrender.com/proposals/${viewingProposal.id}/download?format=pdf`,
               "_blank"
             );
           }}

@@ -85,7 +85,7 @@ jobs:
       - name: Build
         run: npm run build
         env:
-          VITE_API_URL: http://localhost:8000/api/v1
-          VITE_KEYCLOAK_URL: http://localhost:8080
+          VITE_API_URL: https://marketgen-ai.onrender.com/api/v1
+          VITE_KEYCLOAK_URL: https://marketgen-ai.onrender.com
           VITE_KEYCLOAK_REALM: nd-marketing
           VITE_KEYCLOAK_CLIENT_ID: nd-frontend
