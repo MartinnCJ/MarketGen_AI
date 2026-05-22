@@ -43,7 +43,7 @@ jobs:
       - name: Run tests
         env:
           APP_ENV: test
-          KEYCLOAK_URL: http://localhost:8080
+          KEYCLOAK_URL: https://marketgen-ai.onrender.com
           KEYCLOAK_REALM: test
           KEYCLOAK_CLIENT_ID: test
           GOOGLE_CLOUD_PROJECT: test
