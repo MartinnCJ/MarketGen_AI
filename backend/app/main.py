@@ -1,33 +1,24 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.config import settings
+
 from app.routers import (
     health,
-    auth,
-    books,
-    jobs,
-    proposals,
-    customers,
-    settings as settings_router,
-    chat,
-    reports,
-    assets,
-    templates,
-    analysis,
-    publishing,
+    reports_mock,
+    books_mock,
+    customers_mock,
+    templates_mock,
+    proposals_mock,
 )
 
 app = FastAPI(
-    title=settings.app_name,
+    title="MarketGen AI API",
     version="1.0.0",
-    description="Backend API for the NoonDalton AI Marketing Suite.",
-    docs_url="/docs" if settings.app_debug else None,
-    redoc_url="/redoc" if settings.app_debug else None,
+    description="Backend API for MarketGen AI",
 )
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.cors_origins,
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -35,16 +26,13 @@ app.add_middleware(
 
 API_PREFIX = "/api/v1"
 
-app.include_router(auth.router)
+@app.get("/")
+def home():
+    return {"message": "Backend MarketGen AI funcionando"}
+
 app.include_router(health.router)
-app.include_router(books.router,           prefix=API_PREFIX)
-app.include_router(jobs.router,            prefix=API_PREFIX)
-app.include_router(proposals.router,       prefix=API_PREFIX)
-app.include_router(customers.router,       prefix=API_PREFIX)
-app.include_router(settings_router.router, prefix=API_PREFIX)
-app.include_router(chat.router,            prefix=API_PREFIX)
-app.include_router(reports.router,         prefix=API_PREFIX)
-app.include_router(assets.router,          prefix=API_PREFIX)
-app.include_router(templates.router,       prefix=API_PREFIX)
-app.include_router(analysis.router,        prefix=API_PREFIX)
-app.include_router(publishing.router,      prefix=API_PREFIX)
+app.include_router(reports_mock.router, prefix=API_PREFIX)
+app.include_router(books_mock.router, prefix=API_PREFIX)
+app.include_router(customers_mock.router, prefix=API_PREFIX)
+app.include_router(templates_mock.router, prefix=API_PREFIX)
+app.include_router(proposals_mock.router, prefix=API_PREFIX)

@@ -1,12 +1,15 @@
-const API_URL = "https://marketgen-ai.onrender.com/proposals";
+const API_URL =
+  import.meta.env.VITE_API_URL || "http://127.0.0.1:8000/api/v1";
+
+const PROPOSALS_URL = `${API_URL}/proposals`;
 
 export const getProposals = async () => {
-  const response = await fetch(API_URL);
+  const response = await fetch(PROPOSALS_URL);
   return response.json();
 };
 
 export const createProposal = async (proposal) => {
-  const response = await fetch(API_URL, {
+  const response = await fetch(PROPOSALS_URL, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -18,7 +21,7 @@ export const createProposal = async (proposal) => {
 };
 
 export const updateProposal = async (id, proposal) => {
-  const response = await fetch(`${API_URL}/${id}`, {
+  const response = await fetch(`${PROPOSALS_URL}/${id}`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
@@ -30,24 +33,30 @@ export const updateProposal = async (id, proposal) => {
 };
 
 export const deleteProposal = async (id) => {
-  const response = await fetch(`${API_URL}/${id}`, {
+  const response = await fetch(`${PROPOSALS_URL}/${id}`, {
     method: "DELETE",
   });
 
   return response.json();
 };
 
-export const generateProposalDraft = async (proposalId) => {
+export const generateDraft = async (proposalId) => {
   const response = await fetch(
-    `https://marketgen-ai.onrender.com/proposals/${proposalId}/generate-draft`,
+    `${PROPOSALS_URL}/${proposalId}/generate-draft`,
     {
       method: "POST",
     }
   );
 
-  if (!response.ok) {
-    throw new Error("Error generating proposal draft");
-  }
-
   return response.json();
+};
+
+export const generateProposalDraft = generateDraft;
+
+export const downloadProposalPdf = (id) => {
+  window.open(`${PROPOSALS_URL}/${id}/download?format=pdf`, "_blank");
+};
+
+export const downloadProposalDocx = (id) => {
+  window.open(`${PROPOSALS_URL}/${id}/download?format=docx`, "_blank");
 };

@@ -6,7 +6,10 @@ import {
   deleteProposal,
   updateProposal,
   generateProposalDraft,
+  downloadProposalPdf,
+  downloadProposalDocx,
 } from "./api/proposalsApi";
+import ReactMarkdown from "react-markdown";
 /* ═══════════════════════════════════════════════════════════════ */
 /*  INLINE SVG ICONS                                               */
 /* ═══════════════════════════════════════════════════════════════ */
@@ -753,16 +756,24 @@ const filtered =
         <Btn variant="secondary" onClick={() => setViewingProposal(null)}>
           Close
         </Btn>
-
-        <Btn
-          onClick={() => {
+      <Btn
+            onClick={() => {
             window.open(
-              `https://marketgen-ai.onrender.com/proposals/${viewingProposal.id}/download?format=pdf`,
-              "_blank"
+            `http://127.0.0.1:8000/api/v1/proposals/${viewingProposal.id}/download?format=pdf`,
+            "_blank"
+          );
+        }}
+      >
+          Download PDF
+      </Btn>
+    <Btn
+        onClick={() => {
+        window.open(
+        `http://127.0.0.1:8000/api/v1/proposals/${viewingProposal.id}/download?format=docx`,"_blank"  
             );
           }}
         >
-          Download PDF
+        Download Word
         </Btn>
       </div>
     </div>
