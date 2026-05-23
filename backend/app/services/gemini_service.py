@@ -16,6 +16,7 @@ from __future__ import annotations
 import json
 import re
 from typing import Any, Dict, List, Optional
+from urllib import response
 
 import google.generativeai as genai
 
@@ -78,7 +79,12 @@ async def _generate_text(prompt: str, model_name: Optional[str] = None) -> str:
     """Low-level helper: send a plain text prompt and return the response."""
     model = _get_model(model_name)
     response = await model.generate_content_async(prompt)
-    return response.text.strip()
+
+    text = response.text.strip()
+    text = re.sub(r"```html\s*", "", text)
+    text = re.sub(r"```\s*", "", text)
+
+    return text
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -267,12 +273,50 @@ FINANCIAL SUMMARY:
 - TOTAL:     ${total:.2f}
 
 Generate a complete, professional proposal by:
-1. Filling in all {{{{placeholder}}}} variables with the appropriate data.
-2. Writing compelling, customised text for each section based on the business context.
-3. Formatting the output as clean HTML.
-4. Including a formatted services table with all line items.
 
-Output ONLY the HTML content. No preamble or commentary.
+1. Filling in all {{placeholder}} variables with the appropriate data.
+2. Writing compelling, customised text for each section based on the business context.
+3. Formatting the output as CLEAN HTML ONLY.
+4. Including a professional pricing/services table using REAL HTML table tags.
+5. Highlighting important titles and concepts using <strong>.
+6. Using proper spacing and readable formatting.
+
+IMPORTANT RULES:
+- Output ONLY HTML.
+- DO NOT use Markdown.
+- DO NOT use ```html
+- DO NOT use triple backticks.
+- DO NOT wrap the response in <html>, <head>, or <body>.
+- Use semantic HTML tags like:
+  <h1>, <h2>, <h3>, <p>, <ul>, <li>, <strong>, <table>, <thead>, <tbody>, <tr>, <th>, <td>
+
+PRICING REQUIREMENTS:
+- You MUST estimate realistic prices based on the business context.
+- Do NOT use $0.00.
+- Generate realistic monetary values for each service.
+- Use USD format like $1,200.00.
+- The pricing table MUST be a valid HTML <table>.
+- Do NOT simulate tables with spaces or aligned text.
+    
+TABLE REQUIREMENTS:
+- The pricing section MUST use a real HTML table.
+- Use:
+  <table>
+  <thead>
+  <tbody>
+  <tr>
+  <th>
+  <td>
+
+If you include a pricing section, it MUST contain the literal text "<table>" and "</table>". If you cannot generate a valid HTML table, do not include pricing.
+  
+- The table should contain:
+  Service Description
+  Quantity
+  Unit Price
+  Total
+
+Output ONLY the HTML content. No commentary or explanations.
 """
 
     model = _get_model(model_name)
@@ -346,10 +390,48 @@ async def chat_response(
         for msg in history
     ])
 
-    full_message = f"{SYSTEM_PROMPT}{context_block}\n\nUSER: {message}"
-    response = await chat.send_message_async(full_message)
-    return response.text.strip()
+    full_message = f"""
+{SYSTEM_PROMPT}
 
+RESPONDE SIEMPRE USANDO HTML PROFESIONAL.
+
+REGLAS IMPORTANTES:
+- NO uses Markdown
+- NO uses ###
+- NO uses **
+- NO uses ```html
+- NO uses triple backticks
+- Devuelve SOLO HTML limpio
+
+USA SOLAMENTE:
+<h1>, <h2>, <h3>, <p>, <strong>, <ul>, <ol>, <li>,
+<table>, <thead>, <tbody>, <tr>, <th>, <td>
+
+FORMATO:
+- Usa títulos profesionales
+- Usa párrafos bien separados
+- Usa <strong> para destacar conceptos importantes
+- Si hablas de precios o costos, usa tablas HTML reales
+- Usa listas cuando sea necesario
+
+{context_block}
+
+USER:
+{message}
+"""
+    response = await chat.send_message_async(full_message)
+
+    text = response.text.strip()
+    text = re.sub(r"```html\s*", "", text)
+    text = re.sub(r"```\s*", "", text)
+    text = text.replace("### ", "<h3>")
+    text = text.replace("## ", "<h2>")
+    text = text.replace("---", "")
+    text = re.sub(r"\*\*(.*?)\*\*", r"<strong>\1</strong>", text)
+    text = text.replace("\n", "<br />")
+
+
+    return text
 
 # ─────────────────────────────────────────────────────────────────────────────
 # SEO Analysis

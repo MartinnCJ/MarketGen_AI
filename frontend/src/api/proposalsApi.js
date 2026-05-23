@@ -1,5 +1,5 @@
 const API_URL =
-  import.meta.env.VITE_API_URL || "http://127.0.0.1:8000/api/v1";
+  import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
 
 const PROPOSALS_URL = `${API_URL}/proposals`;
 
@@ -11,9 +11,7 @@ export const getProposals = async () => {
 export const createProposal = async (proposal) => {
   const response = await fetch(PROPOSALS_URL, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(proposal),
   });
 
@@ -23,9 +21,7 @@ export const createProposal = async (proposal) => {
 export const updateProposal = async (id, proposal) => {
   const response = await fetch(`${PROPOSALS_URL}/${id}`, {
     method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(proposal),
   });
 
@@ -41,12 +37,9 @@ export const deleteProposal = async (id) => {
 };
 
 export const generateDraft = async (proposalId) => {
-  const response = await fetch(
-    `${PROPOSALS_URL}/${proposalId}/generate-draft`,
-    {
-      method: "POST",
-    }
-  );
+  const response = await fetch(`${PROPOSALS_URL}/${proposalId}/generate-draft`, {
+    method: "POST",
+  });
 
   return response.json();
 };
