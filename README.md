@@ -124,9 +124,15 @@ FIRESTORE_DATABASE=(default)
 
 # Gemini
 GEMINI_API_KEY=your-gemini-api-key
+<<<<<<< HEAD
 GEMINI_DEFAULT_MODEL=gemini-2.0-flash
 
 # Supabase Storage
+=======
+GEMINI_DEFAULT_MODEL=gemini-2.0-flash-lite
+
+# Supabase Storageexit()
+>>>>>>> 298ebad (Actualizacion de datos)
 SUPABASE_URL=https://your-project.supabase.co
 SUPABASE_SERVICE_KEY=your-service-role-key
 SUPABASE_STORAGE_BUCKET=nd-assets
@@ -276,9 +282,15 @@ settings/{userId}   ← keyed by user ID (one doc per org)
 ### LLM (Gemini) model selection
 
 The default model is configurable via `GEMINI_DEFAULT_MODEL` env var or via the Settings UI. Supported values:
+<<<<<<< HEAD
 - `gemini-2.0-flash` (default — fast, low cost)
 - `gemini-2.0-flash-thinking` (advanced reasoning)
 - `gemini-1.5-pro` (long context — up to 2M tokens)
+=======
+- `gemini-2.0-flash-lite` (default — fast, low cost)
+- `gemini-2.0-flash-lite-thinking` (advanced reasoning)
+- `gemini-2.0-flash-lite` (long context — up to 2M tokens)
+>>>>>>> 298ebad (Actualizacion de datos)
 
 ---
 

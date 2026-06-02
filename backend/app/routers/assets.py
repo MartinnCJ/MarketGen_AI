@@ -96,7 +96,11 @@ async def delete_asset(
         raise HTTPException(status_code=404, detail="Asset not found.")
     _assert_owner(asset, user)
     if asset.get("storagePath"):
+<<<<<<< HEAD
         await storage_service.delete_file(asset["storagePath"])
+=======
+        storage_service.delete_file(asset["storagePath"])
+>>>>>>> 298ebad (Actualizacion de datos)
     await assets_repo.delete(asset_id)
 
 
@@ -112,7 +116,11 @@ async def download_asset(
     _assert_owner(asset, user)
     if not asset.get("storagePath"):
         raise HTTPException(status_code=404, detail="File not available yet.")
+<<<<<<< HEAD
     url = await storage_service.get_signed_url(asset["storagePath"], expires_in=300)
+=======
+    url = storage_service.get_signed_url(asset["storagePath"], expires_in_seconds=300)
+>>>>>>> 298ebad (Actualizacion de datos)
     return RedirectResponse(url=url)
 
 

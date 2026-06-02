@@ -5,9 +5,20 @@ python-multipart==0.0.12
 
 # ── Config & Env ──────────────────────────────────────────────────────────────
 pydantic==2.10.2
+<<<<<<< HEAD
 pydantic-settings==2.6.1
 python-dotenv==1.0.1
 
+=======
+email-validator
+pydantic-settings==2.6.1
+python-dotenv==1.0.1
+
+# ── Database ──────────────────────────────────────────────────────────────────
+sqlalchemy==2.0.36
+psycopg2-binary==2.9.10
+
+>>>>>>> 298ebad (Actualizacion de datos)
 # ── Authentication (Keycloak JWT) ─────────────────────────────────────────────
 python-jose[cryptography]==3.3.0
 httpx==0.27.2
@@ -18,6 +29,10 @@ google-auth==2.36.0
 
 # ── Gemini LLM ────────────────────────────────────────────────────────────────
 google-generativeai==0.8.3
+<<<<<<< HEAD
+=======
+openai==2.38.0
+>>>>>>> 298ebad (Actualizacion de datos)
 
 # ── Supabase Storage ──────────────────────────────────────────────────────────
 supabase==2.10.0
@@ -30,6 +45,10 @@ flower==2.0.1
 
 # ── Document generation ───────────────────────────────────────────────────────
 python-docx==1.1.2
+<<<<<<< HEAD
+=======
+beautifulsoup4==4.14.3
+>>>>>>> 298ebad (Actualizacion de datos)
 reportlab==4.2.5
 weasyprint==62.3
 jinja2==3.1.4
@@ -39,10 +58,17 @@ openpyxl==3.1.5
 python-slugify==8.0.4
 Pillow==11.0.0
 aiofiles==24.1.0
+<<<<<<< HEAD
 uuid==1.30
+=======
+>>>>>>> 298ebad (Actualizacion de datos)
 
 # ── Testing ───────────────────────────────────────────────────────────────────
 pytest==8.3.3
 pytest-asyncio==0.24.0
 anyio[trio]==4.6.2
 httpx==0.27.2
+<<<<<<< HEAD
+=======
+
+>>>>>>> 298ebad (Actualizacion de datos)

@@ -3,6 +3,11 @@ Firestore service — async client wrapper with typed helpers.
 
 Collections used by this project:
   - users/{userId}
+<<<<<<< HEAD
+=======
+  - refreshTokens/{tokenHash}
+  - passwordResetTokens/{tokenHash}
+>>>>>>> 298ebad (Actualizacion de datos)
   - books/{bookId}
   - books/{bookId}/chapters/{chapterId}
   - proposals/{proposalId}
@@ -14,10 +19,18 @@ Collections used by this project:
 """
 from __future__ import annotations
 
+<<<<<<< HEAD
+=======
+import json
+>>>>>>> 298ebad (Actualizacion de datos)
 import uuid
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 
+<<<<<<< HEAD
+=======
+from google.oauth2 import service_account
+>>>>>>> 298ebad (Actualizacion de datos)
 from google.cloud import firestore
 from google.cloud.firestore_v1.async_client import AsyncClient
 from google.cloud.firestore_v1 import AsyncDocumentReference
@@ -32,13 +45,42 @@ def get_db() -> AsyncClient:
     """Return the singleton Firestore async client."""
     global _client
     if _client is None:
+<<<<<<< HEAD
         _client = firestore.AsyncClient(
             project=settings.google_cloud_project,
             database=settings.firestore_database,
+=======
+        credentials = None
+        if settings.firebase_service_account_json:
+            credentials = service_account.Credentials.from_service_account_info(
+                json.loads(settings.firebase_service_account_json)
+            )
+        elif settings.firebase_credentials_path:
+            credentials = service_account.Credentials.from_service_account_file(
+                settings.firebase_credentials_path
+            )
+        elif settings.google_application_credentials:
+            credentials = service_account.Credentials.from_service_account_file(
+                settings.google_application_credentials
+            )
+        _client = firestore.AsyncClient(
+            project=settings.google_cloud_project or None,
+            database=settings.firestore_database,
+            credentials=credentials,
+>>>>>>> 298ebad (Actualizacion de datos)
         )
     return _client
 
 
+<<<<<<< HEAD
+=======
+async def check_firestore_connection() -> bool:
+    """Run a tiny read to verify Firestore credentials and network access."""
+    await get_db().collection("_health").limit(1).get()
+    return True
+
+
+>>>>>>> 298ebad (Actualizacion de datos)
 # ── Timestamp helpers ─────────────────────────────────────────────────────────
 def now_utc() -> datetime:
     return datetime.now(timezone.utc)
@@ -58,7 +100,15 @@ class FirestoreRepo:
     collection: str = ""
 
     def __init__(self):
+<<<<<<< HEAD
         self.db = get_db()
+=======
+        pass
+
+    @property
+    def db(self) -> AsyncClient:
+        return get_db()
+>>>>>>> 298ebad (Actualizacion de datos)
 
     def _col(self):
         return self.db.collection(self.collection)
@@ -110,13 +160,23 @@ class FirestoreRepo:
         if filters:
             for field, op, value in filters:
                 query = query.where(filter=firestore.FieldFilter(field, op, value))
+<<<<<<< HEAD
         if order_by:
+=======
+
+        # Firestore requires composite indexes for equality filters plus order_by.
+        # For MVP-sized per-user lists, avoid those deploy-time footguns and sort
+        # after fetching the filtered result set.
+        sort_client_side = bool(filters and order_by)
+        if order_by and not sort_client_side:
+>>>>>>> 298ebad (Actualizacion de datos)
             direction = (
                 firestore.Query.DESCENDING
                 if order_direction == "DESCENDING"
                 else firestore.Query.ASCENDING
             )
             query = query.order_by(order_by, direction=direction)
+<<<<<<< HEAD
         if limit:
             query = query.limit(limit)
         if offset:
@@ -124,6 +184,23 @@ class FirestoreRepo:
 
         docs = await query.get()
         return [d.to_dict() for d in docs if d.exists]
+=======
+        if limit and not sort_client_side:
+            query = query.limit(limit)
+        if offset and not sort_client_side:
+            query = query.offset(offset)
+
+        docs = await query.get()
+        items = [d.to_dict() for d in docs if d.exists]
+        if sort_client_side:
+            reverse = order_direction == "DESCENDING"
+            items.sort(key=lambda item: item.get(order_by), reverse=reverse)
+            if offset:
+                items = items[offset:]
+            if limit:
+                items = items[:limit]
+        return items
+>>>>>>> 298ebad (Actualizacion de datos)
 
     # ── Update ────────────────────────────────────────────────────────────────
     async def update(self, doc_id: str, data: Dict[str, Any]) -> Dict[str, Any]:
@@ -241,6 +318,53 @@ class JobsRepo(FirestoreRepo):
         await self.update(job_id, {"status": "failed", "error": error})
 
 
+<<<<<<< HEAD
+=======
+class UsersRepo(FirestoreRepo):
+    collection = "users"
+
+    async def get_by_email(self, email: str) -> Optional[Dict[str, Any]]:
+        docs = await self.list(
+            filters=[("emailLower", "==", email.lower())],
+            limit=1,
+        )
+        return docs[0] if docs else None
+
+    async def create_user(self, data: Dict[str, Any]) -> Dict[str, Any]:
+        payload = {
+            **data,
+            "emailLower": data["email"].lower(),
+            "roles": data.get("roles") or ["user"],
+            "status": data.get("status") or "active",
+            "lastLoginAt": None,
+        }
+        return await self.create(payload)
+
+    async def touch_login(self, user_id: str) -> None:
+        await self.update(user_id, {"lastLoginAt": now_utc()})
+
+
+class RefreshTokensRepo(FirestoreRepo):
+    collection = "refreshTokens"
+
+    async def create_token(self, token_hash: str, data: Dict[str, Any]) -> Dict[str, Any]:
+        return await self.create(data, doc_id=token_hash)
+
+    async def revoke(self, token_hash: str) -> None:
+        await self.update(token_hash, {"revokedAt": now_utc()})
+
+
+class PasswordResetTokensRepo(FirestoreRepo):
+    collection = "passwordResetTokens"
+
+    async def create_token(self, token_hash: str, data: Dict[str, Any]) -> Dict[str, Any]:
+        return await self.create(data, doc_id=token_hash)
+
+    async def mark_used(self, token_hash: str) -> None:
+        await self.update(token_hash, {"usedAt": now_utc()})
+
+
+>>>>>>> 298ebad (Actualizacion de datos)
 class ProposalsRepo(FirestoreRepo):
     collection = "proposals"
 
@@ -268,6 +392,12 @@ class SettingsRepo(FirestoreRepo):
 # ── Module-level singletons ───────────────────────────────────────────────────
 books_repo      = BooksRepo()
 jobs_repo       = JobsRepo()
+<<<<<<< HEAD
+=======
+users_repo      = UsersRepo()
+refresh_tokens_repo = RefreshTokensRepo()
+password_reset_tokens_repo = PasswordResetTokensRepo()
+>>>>>>> 298ebad (Actualizacion de datos)
 proposals_repo  = ProposalsRepo()
 customers_repo  = CustomersRepo()
 templates_repo  = TemplatesRepo()

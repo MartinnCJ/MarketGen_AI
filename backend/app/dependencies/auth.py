@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 """
 Keycloak JWT authentication dependency for FastAPI.
 
@@ -64,6 +65,36 @@ async def verify_token(
     FastAPI dependency — validates a Keycloak Bearer token and returns
     the authenticated CurrentUser. Raise 401 on any failure.
     """
+=======
+"""JWT authentication dependency for Firestore-backed MVP auth."""
+from __future__ import annotations
+
+from typing import Any, Dict, Optional
+
+from fastapi import Depends, HTTPException, Security, status
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+from jose import JWTError, jwt
+from pydantic import BaseModel, Field
+
+from app.config import settings
+from app.services.auth_service import JWT_ALGORITHM
+
+http_bearer = HTTPBearer(auto_error=True)
+
+
+class CurrentUser(BaseModel):
+    sub: str
+    email: Optional[str] = None
+    name: Optional[str] = None
+    preferred_username: Optional[str] = None
+    roles: list[str] = Field(default_factory=list)
+    raw: Dict[str, Any] = Field(default_factory=dict)
+
+
+async def verify_token(
+    credentials: HTTPAuthorizationCredentials = Security(http_bearer),
+) -> CurrentUser:
+>>>>>>> 298ebad (Actualizacion de datos)
     token = credentials.credentials
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
@@ -72,6 +103,7 @@ async def verify_token(
     )
 
     try:
+<<<<<<< HEAD
         jwks = await _get_jwks()
 
         # Decode header to find the key ID (kid)
@@ -107,6 +139,16 @@ async def verify_token(
         realm_access = payload.get("realm_access", {})
         roles = realm_access.get("roles", [])
 
+=======
+        payload: Dict[str, Any] = jwt.decode(
+            token,
+            settings.app_secret_key,
+            algorithms=[JWT_ALGORITHM],
+        )
+        if payload.get("typ") != "access":
+            raise credentials_exception
+        roles = payload.get("roles") or ["user"]
+>>>>>>> 298ebad (Actualizacion de datos)
         return CurrentUser(
             sub=payload["sub"],
             email=payload.get("email"),
@@ -115,6 +157,7 @@ async def verify_token(
             roles=roles,
             raw=payload,
         )
+<<<<<<< HEAD
 
     except JWTError as exc:
         raise credentials_exception from exc
@@ -146,10 +189,31 @@ def require_roles(*required_roles: str):
                     status_code=status.HTTP_403_FORBIDDEN,
                     detail=f"Role '{role}' is required to access this resource.",
                 )
+=======
+    except JWTError as exc:
+        raise credentials_exception from exc
+    except KeyError as exc:
+        raise credentials_exception from exc
+
+
+def require_roles(*required_roles: str):
+    async def _guard(
+        current_user: CurrentUser = Depends(verify_token),
+    ) -> CurrentUser:
+        missing = [role for role in required_roles if role not in current_user.roles]
+        if missing:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail=f"Missing required roles: {', '.join(missing)}.",
+            )
+>>>>>>> 298ebad (Actualizacion de datos)
         return current_user
 
     return _guard
 
 
+<<<<<<< HEAD
 # ── Convenience alias for routes that just need auth ─────────────────────────
+=======
+>>>>>>> 298ebad (Actualizacion de datos)
 get_current_user = verify_token

@@ -163,6 +163,7 @@ const Field = ({ label, hint, children }) => (
 /* ═══════════════════════════════════════════════════════════════ */
 function DashboardPage() {
     const [dashboardData, setDashboardData] = useState({
+<<<<<<< HEAD
     detected: 0,
     researched: 0,
     contacted: 0,
@@ -171,6 +172,15 @@ function DashboardPage() {
     won: 0,
      });
 
+=======
+  detected: 0,
+  researched: 0,
+  contacted: 0,
+  pendingReview: 0,
+  replied: 0,
+  won: 0,
+});
+>>>>>>> 298ebad (Actualizacion de datos)
   useEffect(() => {
   getDashboardData().then((data) => {
     console.log("Datos recibidos:", data);
@@ -199,7 +209,11 @@ function DashboardPage() {
         <KpiCard icon={SearchIcon} label="Detected" value={dashboardData.detected} sub="this week" color="bg-blue-50 text-blue-600" />
         <KpiCard icon={UsersIcon} label="Researched" value={dashboardData.researched} sub="contacts" color="bg-cyan-50 text-cyan-600" />            
         <KpiCard icon={MailIcon} label="Contacted" value={dashboardData.contacted} sub="emails" color="bg-indigo-50 text-indigo-600" />
+<<<<<<< HEAD
         <KpiCard icon={AlertIcon} label="Pending Review" value={dashboardData.pending_review} sub="need attention" color="bg-amber-50 text-amber-600" />
+=======
+        <KpiCard icon={AlertIcon} label="Pending Review" value={dashboardData.pendingReview} sub="need attention" color="bg-amber-50 text-amber-600" />
+>>>>>>> 298ebad (Actualizacion de datos)
         <KpiCard icon={ChatIcon} label="Replied" value={dashboardData.replied} sub="conversations" color="bg-purple-50 text-purple-600" />
         <KpiCard icon={CheckIcon} label="Won" value={dashboardData.won} sub="new clients" color="bg-green-50 text-green-600" />
       </div>
@@ -413,6 +427,7 @@ function ContentLibraryPage() {
   };
 
   useEffect(() => {
+<<<<<<< HEAD
     const loadProposals = async () => {
       try {
         const data = await getProposals();
@@ -424,6 +439,28 @@ function ContentLibraryPage() {
 
     loadProposals();
   }, []);
+=======
+  async function loadProposals() {
+    try {
+      const data = await getProposals();
+
+      console.log("PROPOSALS:", data);
+
+      if (Array.isArray(data)) {
+        setProposals(data);
+      } else {
+        setProposals([]);
+      }
+
+    } catch (error) {
+      console.error(error);
+      setProposals([]);
+    }
+  }
+
+  loadProposals();
+}, []);
+>>>>>>> 298ebad (Actualizacion de datos)
 
   const handleDeleteProposal = async (id) => {
   await deleteProposal(id);
@@ -446,6 +483,7 @@ function ContentLibraryPage() {
     { title: "Data Entry Services", type: "Proposal", industry: "Retail", services: ["data entry","accounting"], status: "Accepted", uses: 18, date: "Apr 5" },
   ];
 
+<<<<<<< HEAD
   const realProposalItems = proposals.map((proposal) => ({
   id: proposal.id,
   title: proposal.title,
@@ -453,6 +491,17 @@ function ContentLibraryPage() {
   status: proposal.status || "Draft",
   industry: proposal.description || "Created from backend",
   services: ["backend"],
+=======
+  const realProposalItems = (Array.isArray(proposals) ? proposals : []).map((proposal) => ({
+  id: proposal.id,
+  title: proposal.title || proposal.name || "AI Generated Proposal",
+  type: "Proposal",
+  status: proposal.status || "generated",
+  description: proposal.description || "",
+  content: proposal.content || proposal.description || "",
+  industry: proposal.content || proposal.description || "AI Generated Proposal",
+  services: ["AI"],
+>>>>>>> 298ebad (Actualizacion de datos)
   uses: 0,
   date: "Today",
 }));
@@ -502,7 +551,11 @@ const filtered =
         {filtered.map(item => {
           const Ic = typeIcon(item.type);
           return (
+<<<<<<< HEAD
             <Card key={item.title} className="p-4 hover:border-indigo-200 cursor-pointer transition-colors group">
+=======
+            <Card key={item.id || item.title} className="p-4 hover:border-indigo-200 cursor-pointer transition-colors group">
+>>>>>>> 298ebad (Actualizacion de datos)
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
                   <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${typeColor(item.type)}`}><Ic size={14} /></div>
@@ -539,7 +592,15 @@ const filtered =
                   </button>
 
                   <button
+<<<<<<< HEAD
                     onClick={() => setEditingProposal(item)}
+=======
+                    onClick={() => setEditingProposal({
+                      ...item,
+                      draftTitle: item.title || "",
+                      draftContent: item.content || item.industry || "",
+                    })}
+>>>>>>> 298ebad (Actualizacion de datos)
                     className="p-1 rounded hover:bg-gray-100"
                   >
                     <PenIcon size={11} className="text-gray-400" />
@@ -704,11 +765,22 @@ const filtered =
           });
 
           // 2. Generar draft con IA
+<<<<<<< HEAD
             await generateProposalDraft(newProposal.id);
 
           // 3. Refrescar proposals
             const updatedProposals = await getProposals();
             setProposals(updatedProposals);
+=======
+          const generatedProposal = await generateProposalDraft({
+            title: contentTitle || newProposal.title || "AI Generated Proposal",
+            description: contentDescription,
+            clientName: "Demo Client",
+          });
+
+          // 3. Agregar al frontend inmediatamente
+          setProposals((prev) => [...prev, generatedProposal]);
+>>>>>>> 298ebad (Actualizacion de datos)
 
           // 4. Limpiar modal
             setContentTitle("");
@@ -783,7 +855,11 @@ const filtered =
      variant="secondary"
           onClick={() => {
              window.open(
+<<<<<<< HEAD
               `http://127.0.0.1:8000/proposals/${viewingProposal.id}/download?format=docx`,
+=======
+              `http://127.0.0.1:8000/api/v1/proposals/${viewingProposal.id}/download?format=docx`,
+>>>>>>> 298ebad (Actualizacion de datos)
               "_blank"
             );
            }}
@@ -793,7 +869,11 @@ const filtered =
       <Btn
         onClick={() => {
            window.open(
+<<<<<<< HEAD
             `http://127.0.0.1:8000/proposals/${viewingProposal.id}/download?format=pdf`,
+=======
+            `http://127.0.0.1:8000/api/v1/proposals/${viewingProposal.id}/download?format=pdf`,
+>>>>>>> 298ebad (Actualizacion de datos)
             "_blank"
           );
         }}
@@ -819,6 +899,7 @@ const filtered =
 
       <div className="space-y-3">
         <Input
+<<<<<<< HEAD
           value={editingProposal.title}
           onChange={(e) =>
             setEditingProposal({
@@ -837,6 +918,30 @@ const filtered =
             industry: e.target.value,
           })
         }
+=======
+          value={editingProposal.draftTitle || ""}
+          onChange={(e) =>
+            setEditingProposal({
+            ...editingProposal,
+            draftTitle: e.target.value,
+            })
+         }
+        placeholder="Proposal title"
+    />
+      <div
+        className="w-full border border-gray-300 rounded-lg px-4 py-4 text-sm text-left max-h-80 min-h-64 overflow-y-auto bg-white prose prose-slate max-w-none"
+        contentEditable
+        suppressContentEditableWarning
+        dangerouslySetInnerHTML={{
+           __html: editingProposal.draftContent || "",
+        }}
+          onBlur={(e) =>
+          setEditingProposal({
+          ...editingProposal,
+          draftContent: e.currentTarget.innerHTML,
+        })
+      }
+>>>>>>> 298ebad (Actualizacion de datos)
         placeholder="Edit proposal content"
       />
         <div className="flex justify-end gap-2 pt-3">
@@ -844,6 +949,7 @@ const filtered =
             Cancel
           </Btn>
 
+<<<<<<< HEAD
           <Btn
             onClick={async () => {
               await updateProposal(editingProposal.id, {
@@ -859,6 +965,32 @@ const filtered =
             }}
           >
             Save Changes
+=======
+        <Btn
+          onClick={async () => {
+            try {
+              const updatedProposal = await updateProposal(editingProposal.id, {
+                title: editingProposal.draftTitle,
+                description: editingProposal.description || "",
+                content:
+                  editingProposal.draftContent ||
+                  editingProposal.content ||
+                  "",
+                  status: editingProposal.status,
+                });
+
+                 const refreshed = await getProposals();
+                 setProposals(refreshed);
+
+                 setEditingProposal(null);
+                } catch (error) {
+                  console.error(error);
+                  alert("Error updating proposal");
+                }
+              }}
+            >
+              Save Changes
+>>>>>>> 298ebad (Actualizacion de datos)
           </Btn>
         </div>
       </div>
@@ -1047,7 +1179,11 @@ function AssistantPage() {
     setAssistantLoading(true);
 
     try {
+<<<<<<< HEAD
       const response = await fetch("http://127.0.0.1:8000/assistant/chat", {
+=======
+      const response = await fetch("http://127.0.0.1:8000/api/v1/assistant/chat", {
+>>>>>>> 298ebad (Actualizacion de datos)
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -1145,6 +1281,7 @@ function AssistantPage() {
               icon={<SaveIcon size={12} />}
               onClick={async () => {
         try {
+<<<<<<< HEAD
               await createProposal({
               title: "AI Generated Proposal",
               description: msg.content,
@@ -1159,6 +1296,25 @@ function AssistantPage() {
               }}
             >
                Save Proposal
+=======
+              const savedProposal = await createProposal({
+                title: "AI Generated Proposal",
+                description: msg.content.slice(0, 120),
+                content: msg.content,
+                status: "draft",
+                });
+
+                  setProposals((prev) => [...prev, savedProposal]);
+
+                    alert("Proposal guardada correctamente");
+                  } catch (error) {
+                    console.error(error);
+                    alert("Error guardando proposal");
+                  }
+              }}
+            >
+              Save Proposal
+>>>>>>> 298ebad (Actualizacion de datos)
              </Btn>
             </div>
             )}

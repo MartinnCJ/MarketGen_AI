@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 """
 Router — Authentication
 Endpoints del API Reference sección 1:
@@ -38,10 +39,51 @@ from app.schemas.auth import (
     MessageResponse,
     UserInfo,
 )
+=======
+"""Authentication router backed by Firestore users."""
+from __future__ import annotations
+
+from datetime import datetime, timezone
+
+from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi.responses import Response
+
+from app.config import settings
+from app.dependencies.auth import CurrentUser, get_current_user
+from app.schemas.auth import (
+    ForgotPasswordRequest,
+    LoginRequest,
+    LoginResponse,
+    LogoutRequest,
+    MessageResponse,
+    RefreshRequest,
+    RefreshResponse,
+    RegisterRequest,
+    ResetPasswordRequest,
+    UserInfo,
+)
+from app.services.auth_service import (
+    create_access_token,
+    hash_password,
+    hash_token,
+    new_opaque_token,
+    public_user,
+    refresh_expires_at,
+    reset_expires_at,
+    utc_now,
+    verify_password,
+)
+from app.services.firestore_service import (
+    password_reset_tokens_repo,
+    refresh_tokens_repo,
+    users_repo,
+)
+>>>>>>> 298ebad (Actualizacion de datos)
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 
 
+<<<<<<< HEAD
 # ── Helper: llamar al token endpoint de Keycloak ──────────────────────────────
 
 async def _keycloak_token_request(data: dict) -> dict:
@@ -170,10 +212,102 @@ async def login(body: LoginRequest) -> LoginResponse:
         500: {"description": "INTERNAL_SERVER_ERROR"},
     },
 )
+=======
+def _is_expired(value) -> bool:
+    if isinstance(value, datetime):
+        return value.astimezone(timezone.utc) <= utc_now()
+    return True
+
+
+async def _issue_session(user: dict) -> LoginResponse:
+    access_token = create_access_token(user)
+    refresh_token = new_opaque_token()
+    await refresh_tokens_repo.create_token(
+        hash_token(refresh_token),
+        {
+            "userId": user["id"],
+            "expiresAt": refresh_expires_at(),
+            "revokedAt": None,
+        },
+    )
+    await users_repo.touch_login(user["id"])
+    public = public_user(user)
+    return LoginResponse(
+        accessToken=access_token,
+        refreshToken=refresh_token,
+        expiresIn=settings.access_token_expire_minutes * 60,
+        user=UserInfo(**public),
+    )
+
+
+@router.post("/register", response_model=LoginResponse, status_code=status.HTTP_201_CREATED)
+async def register(body: RegisterRequest) -> LoginResponse:
+    email = body.email.lower()
+    existing = await users_repo.get_by_email(email)
+    if existing:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail={"code": "EMAIL_ALREADY_REGISTERED", "message": "El email ya esta registrado."},
+        )
+
+    user = await users_repo.create_user(
+        {
+            "email": email,
+            "name": body.name,
+            "passwordHash": hash_password(body.password),
+            "roles": ["user"],
+            "status": "active",
+        }
+    )
+    return await _issue_session(user)
+
+
+@router.post("/login", response_model=LoginResponse, status_code=status.HTTP_200_OK)
+async def login(body: LoginRequest) -> LoginResponse:
+    user = await users_repo.get_by_email(body.email.lower())
+    if not user or not verify_password(body.password, user.get("passwordHash", "")):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail={"code": "INVALID_CREDENTIALS", "message": "Email o contrasena incorrectos."},
+        )
+    if user.get("status") != "active":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail={"code": "ACCOUNT_DISABLED", "message": "La cuenta esta deshabilitada."},
+        )
+    return await _issue_session(user)
+
+
+@router.post("/refresh", response_model=RefreshResponse, status_code=status.HTTP_200_OK)
+async def refresh_token(body: RefreshRequest) -> RefreshResponse:
+    token_hash = hash_token(body.refresh_token)
+    stored = await refresh_tokens_repo.get(token_hash)
+    if not stored or stored.get("revokedAt") or _is_expired(stored.get("expiresAt")):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail={"code": "TOKEN_EXPIRED_OR_REVOKED", "message": "Refresh token invalido o expirado."},
+        )
+
+    user = await users_repo.get(stored["userId"])
+    if not user or user.get("status") != "active":
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User unavailable.")
+
+    await refresh_tokens_repo.revoke(token_hash)
+    new_session = await _issue_session(user)
+    return RefreshResponse(
+        accessToken=new_session.accessToken,
+        expiresIn=new_session.expiresIn,
+        refreshToken=new_session.refreshToken,
+    )
+
+
+@router.post("/logout", status_code=status.HTTP_204_NO_CONTENT)
+>>>>>>> 298ebad (Actualizacion de datos)
 async def logout(
     body: LogoutRequest,
     current_user: CurrentUser = Depends(get_current_user),
 ) -> Response:
+<<<<<<< HEAD
     """
     Añade el refresh token a la denylist de Keycloak para que no pueda
     usarse para obtener nuevos access tokens.
@@ -312,3 +446,48 @@ async def reset_password(body: ResetPasswordRequest) -> MessageResponse:
             "message": "Reset de contraseña pendiente de integración con Keycloak Admin API.",
         },
     )
+=======
+    token_hash = hash_token(body.refreshToken)
+    stored = await refresh_tokens_repo.get(token_hash)
+    if stored and stored.get("userId") == current_user.sub and not stored.get("revokedAt"):
+        await refresh_tokens_repo.revoke(token_hash)
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+
+@router.post("/forgot-password", response_model=MessageResponse, status_code=status.HTTP_200_OK)
+async def forgot_password(body: ForgotPasswordRequest) -> MessageResponse:
+    user = await users_repo.get_by_email(body.email.lower())
+    if user:
+        reset_token = new_opaque_token()
+        await password_reset_tokens_repo.create_token(
+            hash_token(reset_token),
+            {
+                "userId": user["id"],
+                "expiresAt": reset_expires_at(),
+                "usedAt": None,
+            },
+        )
+        # MVP note: wire this token into email delivery before production.
+    return MessageResponse(
+        message="Si el email existe en el sistema, recibiras un enlace de reset en breve."
+    )
+
+
+@router.post("/reset-password", response_model=MessageResponse, status_code=status.HTTP_200_OK)
+async def reset_password(body: ResetPasswordRequest) -> MessageResponse:
+    token_hash = hash_token(body.token)
+    stored = await password_reset_tokens_repo.get(token_hash)
+    if not stored or stored.get("usedAt") or _is_expired(stored.get("expiresAt")):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail={"code": "INVALID_TOKEN", "message": "Token invalido o expirado."},
+        )
+
+    user = await users_repo.get(stored["userId"])
+    if not user:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid token.")
+
+    await users_repo.update(user["id"], {"passwordHash": hash_password(body.new_password)})
+    await password_reset_tokens_repo.mark_used(token_hash)
+    return MessageResponse(message="Contrasena actualizada correctamente.")
+>>>>>>> 298ebad (Actualizacion de datos)

@@ -51,9 +51,22 @@ async def reports_overview(user: CurrentUser = Depends(get_current_user)):
     }
 
 @router.get("/dashboard")
+<<<<<<< HEAD
 async def reports_dashboard(user: CurrentUser = Depends(get_current_user)):
     """Alias for dashboard KPI endpoint expected by Swagger/frontend."""
     return await reports_overview(user)
+=======
+async def reports_dashboard():
+    """Alias for dashboard KPI endpoint expected by Swagger/frontend."""
+    return {
+        "detected": 342,
+        "researched": 214,
+        "contacted": 156,
+        "pendingReview": 18,
+        "replied": 7,
+        "won": 3
+    }
+>>>>>>> 298ebad (Actualizacion de datos)
 
 @router.get("/books")
 async def reports_books(

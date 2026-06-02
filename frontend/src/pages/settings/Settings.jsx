@@ -11,7 +11,11 @@ import Button from "@/components/ui/Button";
 import { Spinner } from "@/components/ui/Spinner";
 
 const GEMINI_MODELS = [
+<<<<<<< HEAD
   { value: "gemini-2.0-flash",        label: "Gemini 2.0 Flash (rápido, bajo coste)" },
+=======
+  { value: "gemini-2.0-flash-lite",        label: "Gemini 2.0 Flash Lite (rápido, bajo coste)" },
+>>>>>>> 298ebad (Actualizacion de datos)
   { value: "gemini-2.0-flash-thinking", label: "Gemini 2.0 Flash Thinking (razonamiento avanzado)" },
   { value: "gemini-2.0-flash",          label: "Gemini 2.0 Flash (contexto largo)" },
 ];
@@ -38,7 +42,11 @@ const Field = ({ label, hint, children }) => (
 
 export default function Settings() {
   const [form, setForm] = useState({
+<<<<<<< HEAD
     llm: { model: "gemini-2.0-flash", temperature: 0.7, maxOutputTokens: 8192 },
+=======
+    llm: { model: "gemini-2.0-flash-lite", temperature: 0.7, maxOutputTokens: 8192 },
+>>>>>>> 298ebad (Actualizacion de datos)
     crm: { provider: "none", apiKey: "", baseUrl: "" },
     socialConnections: [],
   });
