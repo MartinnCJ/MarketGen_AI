@@ -6,7 +6,6 @@ spinning up a real Keycloak instance.
 """
 from __future__ import annotations
 
-import json
 import time
 from unittest.mock import AsyncMock, MagicMock, patch
 
@@ -143,7 +142,6 @@ async def test_protected_endpoint_requires_auth():
     Note: the shared `client` fixture already has auth overridden.
     We create a clean client here to test the real auth path.
     """
-    import app.dependencies.auth as auth_mod
     from app.main import app as fastapi_app
     from httpx import AsyncClient, ASGITransport
 

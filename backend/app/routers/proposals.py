@@ -148,7 +148,7 @@ async def export_proposal(
             media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
             headers={"Content-Disposition": f'attachment; filename="propuesta-{proposal_id}.docx"'},
         )
-from fastapi import APIRouter, HTTPException, Body
+from fastapi import APIRouter, Body
 from fastapi.responses import FileResponse
 from xml.sax.saxutils import escape
 from openai import OpenAI

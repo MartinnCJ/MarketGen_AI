@@ -2,10 +2,9 @@ from fastapi import APIRouter
 
 from app.config import settings
 import google.generativeai as genai
-from fastapi import APIRouter, Body
+from fastapi import Body
 from openai import OpenAI
 
-from app.config import settings
 
 router = APIRouter(prefix="/assistant", tags=["Assistant"])
 

@@ -43,22 +43,9 @@ from __future__ import annotations
 
 from datetime import datetime, timezone
 
-from fastapi import APIRouter, Depends, HTTPException, status
-from fastapi.responses import Response
 
-from app.config import settings
-from app.dependencies.auth import CurrentUser, get_current_user
 from app.schemas.auth import (
-    ForgotPasswordRequest,
-    LoginRequest,
-    LoginResponse,
-    LogoutRequest,
-    MessageResponse,
-    RefreshRequest,
-    RefreshResponse,
     RegisterRequest,
-    ResetPasswordRequest,
-    UserInfo,
 )
 from app.services.auth_service import (
     create_access_token,

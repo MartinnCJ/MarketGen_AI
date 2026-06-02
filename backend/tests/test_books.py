@@ -9,7 +9,7 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
-from tests.conftest import FAKE_USER_SUB, fake_book, fake_chapter, fake_job
+from tests.conftest import fake_book, fake_chapter, fake_job
 
 API = "/api/v1/books"
 
