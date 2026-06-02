@@ -3,11 +3,8 @@ from datetime import datetime, timezone
 
 from fastapi import APIRouter
 
-<<<<<<< HEAD
-=======
 from app.services.firestore_service import check_firestore_connection
 
->>>>>>> 298ebad (Actualizacion de datos)
 router = APIRouter(tags=["Health"])
 
 APP_VERSION = "1.0.0"
@@ -21,8 +18,6 @@ async def health_check():
         "service":   "NoonDalton AI Marketing Suite API",
         "timestamp": datetime.now(timezone.utc).isoformat(),
     }
-<<<<<<< HEAD
-=======
 
 
 @router.get("/health/db")
@@ -33,4 +28,3 @@ async def database_health_check():
         "database": "firestore",
         "timestamp": datetime.now(timezone.utc).isoformat(),
     }
->>>>>>> 298ebad (Actualizacion de datos)

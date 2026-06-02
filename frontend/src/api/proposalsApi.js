@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 const API_URL =
   import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
 
@@ -58,7 +57,6 @@ export const downloadProposalPdf = (id) => {
 export const downloadProposalDocx = (id) => {
   window.open(`${PROPOSALS_URL}/${id}/download?format=docx`, "_blank");
 };
-=======
 import api from "./axios";
 
 export const proposalsApi = {
@@ -93,4 +91,3 @@ export const downloadProposalPdf = (id) =>
 
 export const downloadProposalDocx = (id) =>
   api.get(`/proposals/${id}/docx`, { responseType: "blob" }); 
->>>>>>> 298ebad (Actualizacion de datos)

@@ -31,10 +31,7 @@
     "react-dom": "^18.3.1",
     "react-hook-form": "^7.53.1",
     "react-hot-toast": "^2.4.1",
-<<<<<<< HEAD
-=======
     "react-markdown": "^10.1.0",
->>>>>>> 298ebad (Actualizacion de datos)
     "react-router-dom": "^6.26.2",
     "recharts": "^2.13.0",
     "uuid": "^10.0.0",

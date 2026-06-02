@@ -12,11 +12,6 @@ __pycache__/
 
 # Env
 .env
-<<<<<<< HEAD
-
-# Logs
-*.log
-=======
 *.env
 backend/firebase-key.json
 firebase-key.json
@@ -27,4 +22,3 @@ backend/marketgen-ai-*.json
 *.log
 
 .vercel
->>>>>>> 298ebad (Actualizacion de datos)

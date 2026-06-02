@@ -133,10 +133,8 @@ def upload_proposal_to_crm(
         "proposal": serialize_proposal(proposal),
     }
 
-# =========================
-# GEMINI GENERATE DRAFT
-# =========================
-
+# ==================# GEMINI GENERATE DRAFT
+# ==================
 @router.post("/{proposal_id}/generate-draft")
 async def generate_proposal_draft(
     proposal_id: int,
@@ -188,10 +186,8 @@ async def generate_proposal_draft(
     }
 
 
-# =========================
-# DOWNLOAD
-# =========================
-
+# ==================# DOWNLOAD
+# ==================
 @router.get("/{proposal_id}/download")
 def download_proposal(
     proposal_id: int,

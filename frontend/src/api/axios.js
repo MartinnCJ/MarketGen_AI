@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 /**
  * Axios instance pre-configured for the NoonDalton API.
  *
@@ -11,15 +10,12 @@
 import axios from 'axios'
 import toast from 'react-hot-toast'
 import keycloak from '@/keycloak'
-=======
 import axios from 'axios'
 import toast from 'react-hot-toast'
->>>>>>> 298ebad (Actualizacion de datos)
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api/v1',
   headers: { 'Content-Type': 'application/json' },
-<<<<<<< HEAD
   timeout: 30_000,
 })
 
@@ -34,7 +30,6 @@ api.interceptors.request.use(async (config) => {
       return Promise.reject(new Error('Session expired — redirecting to login.'))
     }
     config.headers.Authorization = `Bearer ${keycloak.token}`
-=======
   timeout: 30000,
 })
 
@@ -58,12 +53,10 @@ api.interceptors.request.use((config) => {
   const token = authTokenStore.getAccessToken()
   if (token) {
     config.headers.Authorization = `Bearer ${token}`
->>>>>>> 298ebad (Actualizacion de datos)
   }
   return config
 })
 
-<<<<<<< HEAD
 // ── Response interceptor — handle errors globally ─────────────────────────────
 api.interceptors.response.use(
   (response) => response,
@@ -79,7 +72,6 @@ api.interceptors.response.use(
     if (status === 403) {
       toast.error('No tienes permisos para realizar esta acción.')
       return Promise.reject(error)
-=======
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
@@ -106,7 +98,6 @@ api.interceptors.response.use(
 
     if (status === 403) {
       toast.error('No tienes permisos para realizar esta accion.')
->>>>>>> 298ebad (Actualizacion de datos)
     }
 
     if (status >= 500) {
@@ -114,16 +105,12 @@ api.interceptors.response.use(
     }
 
     return Promise.reject(error)
-<<<<<<< HEAD
   }
-=======
   },
->>>>>>> 298ebad (Actualizacion de datos)
 )
 
 export default api
 
-<<<<<<< HEAD
 // ── Typed API helpers ─────────────────────────────────────────────────────────
 
 // Books
@@ -151,7 +138,6 @@ export const booksApi = {
 }
 
 // Jobs
-=======
 export const authApi = {
   register: async (data) => {
     const response = await api.post('/auth/register', data)
@@ -198,12 +184,10 @@ export const booksApi = {
   saveContent: (id, cid, data) => api.put(`/books/${id}/chapters/${cid}/content`, data),
 }
 
->>>>>>> 298ebad (Actualizacion de datos)
 export const jobsApi = {
   get: (id) => api.get(`/jobs/${id}`),
 }
 
-<<<<<<< HEAD
 // Proposals
 export const proposalsApi = {
   list:     (params)       => api.get('/proposals', { params }),
@@ -223,7 +207,6 @@ export const customersApi = {
   update: (id, data)   => api.put(`/customers/${id}`, data),
   delete: (id)         => api.delete(`/customers/${id}`),
   import: (file)       => {
-=======
 export const proposalsApi = {
   list: (params) => api.get('/proposals', { params }),
   create: (data) => api.post('/proposals', data),
@@ -241,14 +224,12 @@ export const customersApi = {
   update: (id, data) => api.put(`/customers/${id}`, data),
   delete: (id) => api.delete(`/customers/${id}`),
   import: (file) => {
->>>>>>> 298ebad (Actualizacion de datos)
     const fd = new FormData()
     fd.append('file', file)
     return api.post('/customers/import', fd, { headers: { 'Content-Type': 'multipart/form-data' } })
   },
 }
 
-<<<<<<< HEAD
 // Templates
 export const templatesApi = {
   list:   (params)   => api.get('/templates', { params }),
@@ -299,7 +280,6 @@ export const analysisApi = {
 // Publishing
 export const publishingApi = {
   publish:   (bookId, data) => api.post(`/books/${bookId}/publish`, data),
-=======
 export const templatesApi = {
   list: (params) => api.get('/templates', { params }),
   create: (data) => api.post('/templates', data),
@@ -343,6 +323,5 @@ export const analysisApi = {
 
 export const publishingApi = {
   publish: (bookId, data) => api.post(`/books/${bookId}/publish`, data),
->>>>>>> 298ebad (Actualizacion de datos)
   translate: (bookId, data) => api.post(`/books/${bookId}/translate`, data),
 }

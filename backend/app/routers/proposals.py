@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 """Proposals router — CRUD + AI generation + export."""
 from __future__ import annotations
 
@@ -149,7 +148,6 @@ async def export_proposal(
             media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
             headers={"Content-Disposition": f'attachment; filename="propuesta-{proposal_id}.docx"'},
         )
-=======
 from fastapi import APIRouter, HTTPException, Body
 from fastapi.responses import FileResponse
 from xml.sax.saxutils import escape
@@ -487,4 +485,3 @@ async def download_proposal(proposal_id: str, format: str = "pdf"):
         )
 
     raise HTTPException(status_code=400, detail="Format must be pdf or docx")
->>>>>>> 298ebad (Actualizacion de datos)

@@ -1,20 +1,16 @@
-<<<<<<< HEAD
 from fastapi import APIRouter
 
 from app.config import settings
 import google.generativeai as genai
-=======
 from fastapi import APIRouter, Body
 from openai import OpenAI
 
 from app.config import settings
->>>>>>> 298ebad (Actualizacion de datos)
 
 router = APIRouter(prefix="/assistant", tags=["Assistant"])
 
 
 @router.post("/chat")
-<<<<<<< HEAD
 async def assistant_chat(payload: dict):
     message = payload.get("message", "")
 
@@ -27,7 +23,6 @@ async def assistant_chat(payload: dict):
     return {
         "reply": response.text
     }
-=======
 async def assistant_chat(payload: dict = Body(default={})):
     message = payload.get("message", "")
 
@@ -71,4 +66,3 @@ NO uses markdown excesivo.
     )
 
     return {"reply": response.choices[0].message.content}
->>>>>>> 298ebad (Actualizacion de datos)

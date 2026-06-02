@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 """
 Router — Authentication
 Endpoints del API Reference sección 1:
@@ -39,7 +38,6 @@ from app.schemas.auth import (
     MessageResponse,
     UserInfo,
 )
-=======
 """Authentication router backed by Firestore users."""
 from __future__ import annotations
 
@@ -78,12 +76,10 @@ from app.services.firestore_service import (
     refresh_tokens_repo,
     users_repo,
 )
->>>>>>> 298ebad (Actualizacion de datos)
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 
 
-<<<<<<< HEAD
 # ── Helper: llamar al token endpoint de Keycloak ──────────────────────────────
 
 async def _keycloak_token_request(data: dict) -> dict:
@@ -212,7 +208,6 @@ async def login(body: LoginRequest) -> LoginResponse:
         500: {"description": "INTERNAL_SERVER_ERROR"},
     },
 )
-=======
 def _is_expired(value) -> bool:
     if isinstance(value, datetime):
         return value.astimezone(timezone.utc) <= utc_now()
@@ -302,12 +297,10 @@ async def refresh_token(body: RefreshRequest) -> RefreshResponse:
 
 
 @router.post("/logout", status_code=status.HTTP_204_NO_CONTENT)
->>>>>>> 298ebad (Actualizacion de datos)
 async def logout(
     body: LogoutRequest,
     current_user: CurrentUser = Depends(get_current_user),
 ) -> Response:
-<<<<<<< HEAD
     """
     Añade el refresh token a la denylist de Keycloak para que no pueda
     usarse para obtener nuevos access tokens.
@@ -446,7 +439,6 @@ async def reset_password(body: ResetPasswordRequest) -> MessageResponse:
             "message": "Reset de contraseña pendiente de integración con Keycloak Admin API.",
         },
     )
-=======
     token_hash = hash_token(body.refreshToken)
     stored = await refresh_tokens_repo.get(token_hash)
     if stored and stored.get("userId") == current_user.sub and not stored.get("revokedAt"):
@@ -490,4 +482,3 @@ async def reset_password(body: ResetPasswordRequest) -> MessageResponse:
     await users_repo.update(user["id"], {"passwordHash": hash_password(body.new_password)})
     await password_reset_tokens_repo.mark_used(token_hash)
     return MessageResponse(message="Contrasena actualizada correctamente.")
->>>>>>> 298ebad (Actualizacion de datos)

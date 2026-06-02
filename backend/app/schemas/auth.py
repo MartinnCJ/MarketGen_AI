@@ -1,13 +1,10 @@
 from pydantic import BaseModel, EmailStr, Field
 
-<<<<<<< HEAD
-=======
 class RegisterRequest(BaseModel):
     email: EmailStr
     password: str = Field(..., min_length=8)
     name: str = Field(..., min_length=2, max_length=120)
 
->>>>>>> 298ebad (Actualizacion de datos)
 class LoginRequest(BaseModel):
     email: EmailStr
     password: str = Field(..., min_length=1)
@@ -33,10 +30,7 @@ class RefreshRequest(BaseModel):
 class RefreshResponse(BaseModel):
     accessToken: str
     expiresIn: int
-<<<<<<< HEAD
-=======
     refreshToken: str | None = None
->>>>>>> 298ebad (Actualizacion de datos)
 
 class ForgotPasswordRequest(BaseModel):
     email: EmailStr
@@ -46,8 +40,5 @@ class ResetPasswordRequest(BaseModel):
     new_password: str = Field(..., min_length=8)
 
 class MessageResponse(BaseModel):
-<<<<<<< HEAD
     message: str
-=======
     message: str
->>>>>>> 298ebad (Actualizacion de datos)
